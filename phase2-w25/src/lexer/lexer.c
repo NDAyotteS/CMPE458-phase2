@@ -4,8 +4,8 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
-#include "../../include/tokens.h"
-#include "../../include/keywords.h"
+#include "../include/tokens.h"
+#include "../include/keywords.h"
 
 // Line tracking
 static int current_line = 1;
@@ -79,6 +79,15 @@ void print_token(Token token) {
             break;
         case TOKEN_SPECIAL_CHARACTER:
             printf("SPECIAL_CHARACTER");
+            break;
+        case TOKEN_SEMICOLON:
+            printf("SEMICOLON");
+            break;
+        case TOKEN_EQUALS:
+            printf("EQUALS");
+            break;
+        case TOKEN_COMPARITIVE:
+            printf("COMPARATIVE SYMBOL");
             break;
         default:
             printf("UNKNOWN");
@@ -404,7 +413,7 @@ Token get_next_token(const char *input, int *pos) {
                     token.lexeme[0] = c;
                     token.lexeme[1] = c_next;
                     token.lexeme[2] = '\0';
-                    token.type = TOKEN_OPERATOR;
+                    token.type = TOKEN_EQUALS;
                     *pos += 2;
                     last_token_type = 'q'; // equals
                 } else if(c_next == c) {
@@ -435,7 +444,11 @@ Token get_next_token(const char *input, int *pos) {
                     token.lexeme[0] = c;
                     token.lexeme[1] = c_next;
                     token.lexeme[2] = '\0';
-                    token.type = TOKEN_OPERATOR;
+                    token.type = TOKEN_EQUALS;
+                    if (c == '=') {
+                        token.type = TOKEN_COMPARITIVE;
+                        last_token_type = 'c'; // comparative
+                    }
                     *pos += 2;
                     last_token_type = 'q'; // equals
                 } else {
@@ -443,21 +456,24 @@ Token get_next_token(const char *input, int *pos) {
                     token.lexeme[0] = c;
                     token.lexeme[1] = '\0';
                     token.type = TOKEN_OPERATOR;
+                    if (c=='=') {
+                        token.type = TOKEN_EQUALS;
+                    }
                     *pos += 1;
                     last_token_type = 'o'; // operator
                 }
                 break;
 
-            //Can be chained together as many times as you want !!!!true
+            //Can be chained together as many times as you want !!!!true, one is comparative other is operator
             case '!':
                 if (c_next == '=') {
                     //!= case
                     token.lexeme[0] = c;
                     token.lexeme[1] = c_next;
                     token.lexeme[2] = '\0';
-                    token.type = TOKEN_OPERATOR;
+                    token.type = TOKEN_COMPARITIVE;
                     *pos += 2;
-                    last_token_type = 'q'; // equals
+                    last_token_type = 'c'; // comparative
                 } else {
                     token.lexeme[0] = c;
                     token.lexeme[1] = '\0';
@@ -467,11 +483,30 @@ Token get_next_token(const char *input, int *pos) {
                 }
                 break;
             
-            //Can be trailed only by itself
+            // Can be trailed only by itself, one is comparative and other is operator
             case '|':
+                if (c_next == c) {
+                    // ||
+                    token.lexeme[0] = c;
+                    token.lexeme[1] = c_next;
+                    token.lexeme[2] = '\0';
+                    token.type = TOKEN_COMPARITIVE;
+                    *pos += 2;
+                    last_token_type = 'c'; // comparative
+                } else {
+                    // |
+                    token.lexeme[0] = c;
+                    token.lexeme[1] = '\0';
+                    token.type = TOKEN_OPERATOR;
+                    *pos += 1;
+                    last_token_type = 'o'; // operator
+                }
+                break;
+
+            // Can be trailed only by itself, both are operators
             case '^':
                 if (c_next == c) {
-                    // ||, ^^
+                    // ^^
                     token.lexeme[0] = c;
                     token.lexeme[1] = c_next;
                     token.lexeme[2] = '\0';
@@ -479,7 +514,7 @@ Token get_next_token(const char *input, int *pos) {
                     *pos += 2;
                     last_token_type = 'o'; // operator
                 } else {
-                    // |, ^
+                    // ^
                     token.lexeme[0] = c;
                     token.lexeme[1] = '\0';
                     token.type = TOKEN_OPERATOR;
@@ -490,8 +525,16 @@ Token get_next_token(const char *input, int *pos) {
 
             //Can be trailed by itself or question mark and CANT standalone
             case '&':
-                if (c_next == c || c_next == '?') {
-                    // &&, &?
+                if (c_next == c) {
+                    // &&
+                    token.lexeme[0] = c;
+                    token.lexeme[1] = c_next;
+                    token.lexeme[2] = '\0';
+                    token.type = TOKEN_COMPARITIVE;
+                    *pos += 2;
+                    last_token_type = 'c'; // comparative
+                } else if (c_next == '?') {
+                    // &?
                     token.lexeme[0] = c;
                     token.lexeme[1] = c_next;
                     token.lexeme[2] = '\0';
@@ -533,14 +576,14 @@ Token get_next_token(const char *input, int *pos) {
                     token.lexeme[0] = c;
                     token.lexeme[1] = c_next;
                     token.lexeme[2] = '\0';
-                    token.type = TOKEN_OPERATOR;
+                    token.type = TOKEN_COMPARITIVE;
                     *pos += 2;
                     last_token_type = 'o'; // operator
                 } else {
                     // <, >
                     token.lexeme[0] = c;
                     token.lexeme[1] = '\0';
-                    token.type = TOKEN_OPERATOR;
+                    token.type = TOKEN_COMPARITIVE;
                     *pos += 1;
                     last_token_type = 'o'; // operator
                 }
@@ -576,8 +619,18 @@ Token get_next_token(const char *input, int *pos) {
         return token;
     }
 
-    // Generic Delimiters (don't need closure)
-    if (c == ';' || c == ',') {
+    // SemiColon needs it own handler
+    if (c == ';') {
+        token.type = TOKEN_SEMICOLON;
+        token.lexeme[0] = c;
+        token.lexeme[1] = '\0';
+        last_token_type = 'd'; //delimiter
+        (*pos)++;
+        return token;
+    }
+
+    // Other delimiters
+    if (c == ',') {
         token.type = TOKEN_DELIMITER;
         token.lexeme[0] = c;
         token.lexeme[1] = '\0';
@@ -597,7 +650,7 @@ Token get_next_token(const char *input, int *pos) {
 
 int main() {
     // get file
-    FILE *file = fopen("../phase1-w25/test/input_correct_lex.txt", "r");
+    FILE *file = fopen("../phase2-w25/test/input_correct_lex.txt", "r");
     if (file == NULL) {
         printf("Error opening file\n");
         return 1;
@@ -646,7 +699,7 @@ int main() {
     current_line = 1;
 
     // get file
-    file = fopen("../phase1-w25/test/input_incorrect_lex.txt", "r");
+    file = fopen("../phase2-w25/test/input_incorrect_lex.txt", "r");
     if (file == NULL) {
         printf("Error opening file\n");
         return 1;

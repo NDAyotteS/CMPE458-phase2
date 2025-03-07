@@ -15,12 +15,15 @@ typedef enum {
     TOKEN_EOF,
     TOKEN_NUMBER,           // e.g. 123
     TOKEN_OPERATOR,         // e.g. + - * / % && ||
+    TOKEN_EQUALS,           // e.g. += -= =
+    TOKEN_COMPARITIVE,       //
     TOKEN_ERROR,            // e.g. ERROR_INVALID_CHAR
     TOKEN_KEYWORD,          // e.g. func if until while for
     TOKEN_IDENTIFIER,
     TOKEN_STRING_LITERAL,   // e.g. "SeaPlus+"
     TOKEN_CHAR_LITERAL,     // e.g. 'c'
     TOKEN_DELIMITER,        // e.g. {} [] ()
+    TOKEN_SEMICOLON,        // e.g. ;
     TOKEN_SPECIAL_CHARACTER // e.g. _ &
 } TokenType;
 
