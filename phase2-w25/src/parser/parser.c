@@ -264,8 +264,6 @@ void free_ast(ASTNode *node) {
     free(node);
 }
 
-
-/*
 // Main function for testing
 int main() {
     // Test with both valid and invalid inputs
@@ -286,4 +284,3 @@ int main() {
     free_ast(ast);
     return 0;
 }
-*/

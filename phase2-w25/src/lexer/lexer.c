@@ -648,6 +648,8 @@ Token get_next_token(const char *input, int *pos) {
     return token;
 }
 
+
+/*
 int main() {
     // get file
     FILE *file = fopen("../phase2-w25/test/input_correct_lex.txt", "r");
@@ -744,3 +746,4 @@ int main() {
     fclose(file);
     return 0;
 }
+*/

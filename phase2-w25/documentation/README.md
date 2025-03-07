@@ -6,7 +6,7 @@
 |**Logic/Conditionals:**|if, else, switch, case, default|
 |**Logic:**|do, while, for, until, break|
 |**IO:**|print, read|
-|**Data Types:**|int, float, double, char, bool, string, void|
+|**Data Types:**|int, float, char, bool, string, void|
 |**Functions:**|func|
 |**Misc:**|null, true, false|
 
