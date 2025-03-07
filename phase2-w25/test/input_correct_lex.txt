@@ -1,0 +1,24 @@
+char hi = 'g';
+char hi2 = '\\';
+char theTab = '\t';
+char theNewline = '\n';
+
+if(x == 6){
+    until(x == 2){
+        x--;
+        x++;
+        print(x);
+    }
+    print(&y);
+}
+
+func void celebrate(){
+    print("HAVE A (TAB HERE) \t HAPPY (NEWLINE HERE) \n BIRTHDAY");
+    # SKIP THIS LINE
+    int y = 5;
+    /* SKIP THIS TOO PLEASE
+    if(x == 5){
+        x++;
+    }
+    END THE COMMENT */
+}

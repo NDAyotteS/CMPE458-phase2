@@ -1,0 +1,18 @@
+int x = = 5
+x+-
+char '\u'
+
+if(x < = 6){
+    united(x == 2){
+        x-+
+        print &
+    }
+    print();
+}
+
+func void celebrate(integer notAKeyword){
+    char 'g
+    print("INVALID ESCAPE \h HERE");
+    String tooLong = "HAPPY BIRTHDAY WE DID CLOSE THIS IT JUST OVERFLOWS BECAUSE WE ARE TOO VERBOSE FOR THE SYSTEM TO UNDERSTAND WHAT IS HAPPENING"
+    print("HAPPY BIRTHDAY WE DIDN'T CLOSE THE STRING );
+}
