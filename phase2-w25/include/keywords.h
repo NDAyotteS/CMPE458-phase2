@@ -1,7 +1,7 @@
 #ifndef KEYWORDS_H
 #define KEYWORDS_H
 
-#define NUM_KEYWORDS 23
+#define NUM_KEYWORDS 22
  
 extern const char * keywords[NUM_KEYWORDS];
 
