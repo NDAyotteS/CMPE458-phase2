@@ -1,7 +1,3 @@
-char 'g'
-char '\\'
-char '\?'
-char '\"'
-char '\''
-char '\r'
-char '\t'
+char c;
+string s;
+int i;

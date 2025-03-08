@@ -409,6 +409,7 @@ void print_ast(ASTNode *node, int level) {
             break;
         case AST_FUNCTION_CALL:
             printf("Function call: %s\n", node->token.lexeme);
+            break;
         case AST_RETURN:
             printf("Return statement\n");
             break;
@@ -488,28 +489,13 @@ char *read_file(const char *filename) {
 }
 // Main function for testing
 int main() {
-    // Test with both valid and invalid inputs
-    const char *input = "int x;\n"// Valid declaration
-                        "x = 42;\n" // Valid assignment
-                        "string y;\n" // Valid declaration
-                        "y = \"YIPPEE\";\n"; // Valid assignment
-                        "y = \"YIPPEE\";\n";; // Valid assignment
-    // TODO 8: Add more test cases and read from a file:
-
-    const char *invalid_input = "int x;\n"
-                                "x = 42;\n"
-                                "int ;";
-
-    printf("Parsing input:\n%s\n", input);
-    parser_init(input);
     ASTNode *ast = parse();
 
     printf("\nAbstract Syntax Tree:\n");
     print_ast(ast, 0);
 
-    free_ast(ast);
     // Read from test files
-    const char *filenames[] = {"test/input_valid.txt", "test/input_invalid.txt"};
+    const char *filenames[] = {"../phase2-w25/test/input_valid.txt", "../phase2-w25/test/input_invalid.txt"};
 
     for (int i = 0; i < 2; i++) {
         printf("Parsing file: %s\n", filenames[i]);
