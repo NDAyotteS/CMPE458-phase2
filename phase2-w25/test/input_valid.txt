@@ -1,3 +1,40 @@
+// declares
+int x;
+string y;
 char c;
-string s;
-int i;
+int z;
+
+// Assignments
+x = 42;
+y = "Hello, Parser!";
+c = 'A';
+z = x + 10 * 3;  // Ensures operator precedence
+
+// Print statement
+print x;
+print y;
+
+// Control flow
+if (x > 20) {
+    print "X is large!";
+} else {
+    print "X is small!";
+}
+
+// While loop
+while (x > 0) {
+    x = x - 1;
+}
+
+// Repeat-Until loop
+repeat {
+    x = x + 1;
+} until (x >= 10);
+
+// Function declaration and call
+func add(a, b) {
+    return a + b;
+}
+
+z = add(5, 10);
+print z;

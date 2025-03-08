@@ -47,6 +47,18 @@ static void parse_error(ParseError error, Token token) {
         case PARSE_ERROR_INVALID_EXPRESSION:
             printf("Invalid expression after '%s'\n", token.lexeme);
             break;
+        case PARSE_ERROR_MISSING_PAREN:
+            printf("Missing parentheses after '%s'\n", token.lexeme);
+            break;
+        case PARSE_ERROR_MISSING_CONDITION:
+            printf("Missing condition after '%s'\n", token.lexeme);
+            break;
+        case PARSE_ERROR_MISSING_BRACE:
+            printf("Missing brace after '%s'\n", token.lexeme);
+            break;
+        case PARSE_ERROR_FUNC_CALL:
+            printf("Function call '%s'\n", token.lexeme);
+            break;
         default:
             printf("Unknown error\n");
     }
@@ -516,5 +528,6 @@ int main() {
         free(file_input);
         printf("\n-----------------------------\n");
     }
+    free_ast(ast);
     return 0;
 }
