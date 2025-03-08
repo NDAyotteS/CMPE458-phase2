@@ -171,7 +171,7 @@ static ASTNode *parse_assignment(void) {
     advance();
 
     // For the case where the assignment is for strings, chars, or null values
-    // TODO: RUN TESTS FOR STRING DECLARATION
+    // TODO: RUN TESTS FOR STRING DECLARATION AND NULL DECLARATIONS
     if(match(TOKEN_STRING) || match(TOKEN_CHAR)) {
         node->right = create_node(AST_STRINGCHAR);
         node->right->token = current_token;
