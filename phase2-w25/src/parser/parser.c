@@ -495,7 +495,7 @@ int main() {
     print_ast(ast, 0);
 
     // Read from test files
-    const char *filenames[] = {"../phase2-w25/test/input_valid.txt", "../phase2-w25/test/input_invalid.txt"};
+    const char *filenames[] = {"../../test/input_valid.txt", "../../test/input_invalid.txt"};
 
     for (int i = 0; i < 2; i++) {
         printf("Parsing file: %s\n", filenames[i]);
