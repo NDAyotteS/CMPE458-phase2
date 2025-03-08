@@ -2,10 +2,10 @@
 
 ## Keywords
 |Category|Keywords|
-|--------|--------|
+|--------|-----|
 |**Logic/Conditionals:**|if, else|
 |**Logic:**|while, for, until, break|
-|**IO:**|print, read|
+|**IO:**|print|
 |**Data Types:**|int, float, char, bool, string, void|
 |**Functions:**|func|
 |**Misc:**|null, true, false|

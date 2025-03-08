@@ -4,12 +4,45 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
-#include "../include/tokens.h"
-#include "../include/keywords.h"
+#include "../../include/tokens.h"
 
 // Line tracking
 static int current_line = 1;
 static char last_token_type = 'y'; // For checking consecutive operators
+
+// Keyword Table
+static struct {
+    const char* word;
+    TokenType type;
+} keywords[] = {
+    {"if", TOKEN_IF},
+    {"else", TOKEN_ELSE},
+    {"while", TOKEN_WHILE},
+    {"for", TOKEN_FOR},
+    {"until", TOKEN_UNTIL},
+    {"break", TOKEN_BREAK},
+    {"print", TOKEN_PRINT},
+    {"int", TOKEN_INT},
+    {"float", TOKEN_FLOAT},
+    {"char", TOKEN_CHAR},
+    {"bool", TOKEN_BOOL},
+    {"string", TOKEN_STRING},
+    {"void", TOKEN_VOID},
+    {"func", TOKEN_FUNC},
+    {"null", TOKEN_NULL},
+    {"true", TOKEN_TRUE},
+    {"false", TOKEN_FALSE}
+};
+
+// New Keyword Checker
+static int IsKeyword(const char* word) {
+    for (int i = 0; i < sizeof(keywords) / sizeof(keywords[0]); i++) {
+        if (strcmp(word, keywords[i].word) == 0) {
+            return keywords[i].type;
+        }
+    }
+    return 0;
+}
 
 /* Print error messages for lexical errors */
 void print_error(ErrorType error, int line, const char *lexeme) {
@@ -62,7 +95,23 @@ void print_token(Token token) {
         case TOKEN_EOF:
             printf("EOF");
             break;
-        case TOKEN_KEYWORD:
+        case TOKEN_IF:
+        case TOKEN_ELSE:
+        case TOKEN_WHILE:
+        case TOKEN_FOR:
+        case TOKEN_UNTIL:
+        case TOKEN_BREAK:
+        case TOKEN_PRINT:
+        case TOKEN_INT:
+        case TOKEN_FLOAT:
+        case TOKEN_CHAR:
+        case TOKEN_BOOL:
+        case TOKEN_STRING:
+        case TOKEN_VOID:
+        case TOKEN_FUNC:
+        case TOKEN_NULL:
+        case TOKEN_TRUE:
+        case TOKEN_FALSE:
             printf("KEYWORD");
             break;
         case TOKEN_IDENTIFIER:
@@ -174,21 +223,22 @@ Token get_next_token(const char *input, int *pos) {
     }
 
     // Keyword and Identifier handler
-    if(isalpha(c) || (c == '_' && isalnum(input[*pos + 1]))){
+    if(isalpha(c) || c == '_'){
         int i = 0;
-        do{
+        do {
             token.lexeme[i++] = c;
             (*pos)++;
             c = input[*pos];
-        } while((isalnum(c) || c == '_') && i < sizeof(token.lexeme) - 1); // numbers and _ are valid in identifiers
-        // Terminate string
+        } while ((isalnum(c) || c == '_') && i < sizeof(token.lexeme) - 1);
+
         token.lexeme[i] = '\0';
 
-        if(iskeyword(token.lexeme)){
-            token.type = TOKEN_KEYWORD;
+        // Check if it's a keyword
+        TokenType keyword_type = IsKeyword(token.lexeme);
+        if (keyword_type) {
+            token.type = keyword_type;
             last_token_type = 'k'; //keyword
-        }
-        else{
+        } else {
             token.type = TOKEN_IDENTIFIER;
             last_token_type = 'i'; //identifier
         }
@@ -594,7 +644,6 @@ Token get_next_token(const char *input, int *pos) {
     (*pos)++;
     return token;
 }
-
 
 /*
 int main() {

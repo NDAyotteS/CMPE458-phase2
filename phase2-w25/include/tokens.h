@@ -3,34 +3,29 @@
 #ifndef TOKENS_H
 #define TOKENS_H
 
-/* Token types that need to be recognized by the lexer
- * TODO: Add more token types as per requirements:
- * - Keywords or reserved words (if, repeat, until)
- * - Identifiers
- * - String literals
- * - More operators
- * - Delimiters
- */
+/* Token types that need to be recognized by the lexer */
 typedef enum {
     TOKEN_EOF,
     TOKEN_NUMBER,           // e.g. 123
     TOKEN_OPERATOR,         // e.g. + - * / %
     TOKEN_EQUALS,           // e.g. += -= =
     TOKEN_COMPARITIVE,      // e.g. == !=
-    TOKEN_ERROR,            // e.g. ERROR_INVALID_CHAR
-    TOKEN_KEYWORD,          // e.g. func if until while for
-    // EACH KEYWORD NEEDS A TOKEN
-    TOKEN_IDENTIFIER,
+    TOKEN_IF, TOKEN_ELSE,                                         // Conditionals
+    TOKEN_WHILE, TOKEN_FOR, TOKEN_UNTIL, TOKEN_BREAK,             // Looping
+    TOKEN_PRINT,                                                  // Output
+    TOKEN_INT, TOKEN_FLOAT, TOKEN_CHAR, TOKEN_BOOL, TOKEN_STRING, // Var Types
+    TOKEN_VOID, TOKEN_FUNC,                                       // Functions
+    TOKEN_NULL, TOKEN_TRUE, TOKEN_FALSE,                          // Logical Assignments
+    TOKEN_IDENTIFIER,       // Any identifiers
     TOKEN_STRING_LITERAL,   // e.g. "SeaPlus+"
     TOKEN_CHAR_LITERAL,     // e.g. 'c'
     TOKEN_DELIMITER,        // e.g. {} [] ()
     TOKEN_SEMICOLON,        // e.g. ;
-    TOKEN_SPECIAL_CHARACTER // e.g. _ &
+    TOKEN_SPECIAL_CHARACTER,// e.g. _ &
+    TOKEN_ERROR             // e.g. ERROR_INVALID_CHAR
 } TokenType;
 
-/* Error types for lexical analysis
- * TODO: Add more error types as needed for your language - as much as you like !!
- */
+/* Error types for lexical analysis */
 typedef enum {
     ERROR_NONE,
     ERROR_INVALID_CHAR,
@@ -43,11 +38,7 @@ typedef enum {
     ERROR_OPEN_DELIMITER
 } ErrorType;
 
-/* Token structure to store token information
- * TODO: Add more fields if needed for your implementation
- * Hint: You might want to consider adding line and column tracking if you want to debug your lexer properly.
- * Don't forget to update the token fields in lexer.c as well
- */
+/* Token structure to store token information */
 typedef struct {
     TokenType type;
     char lexeme[100];   // Actual text of the token
