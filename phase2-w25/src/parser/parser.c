@@ -374,6 +374,9 @@ void print_ast(ASTNode *node, int level) {
         case AST_ASSIGN:
             printf("Assign\n");
             break;
+        case AST_PRINT:
+            printf("Print\n");
+            break;
         case AST_NUMBER:
             printf("Number: %s\n", node->token.lexeme);
             break;
@@ -382,6 +385,59 @@ void print_ast(ASTNode *node, int level) {
             break;
         case AST_STRINGCHAR:
             printf("String/Char: %s\n", node->token.lexeme);
+            break;
+        //control flow cases
+        case AST_IF:
+            printf("If statement\n");
+            break;
+        case AST_ELSE:
+            printf("Else statement\n");
+            break;
+        case AST_WHILE:
+            printf("While statement\n");
+            break;
+        case AST_FOR:
+            printf("For statement\n");
+            break;
+        case AST_UNTIL:
+            printf("Repeat-Until statement\n");
+            break;
+        case AST_BREAK:
+            printf("Break statement\n");
+            break;
+        //function node types
+        case AST_FUNCTION_DECL:
+            printf("Function declaration: %s\n", node->token.lexeme);
+            break;
+        case AST_FUNCTION_CALL:
+            printf("Function call: %s\n", node->token.lexeme);
+        case AST_RETURN:
+            printf("Return statement\n");
+            break;
+        case AST_BLOCK:
+            printf("Block\n");
+            break;
+        case AST_PARAM_LIST:
+            printf("Parameter list\n");
+            break;
+        //expression cases
+        case AST_BINOP:
+            printf("Binary operator: %s\n", node->token.lexeme);
+            break;
+        case AST_UNARYOP:
+            printf("Unary operator: %s\n", node->token.lexeme);
+            break;
+        case AST_COMPARISON:
+            printf("Comparison operator: %s\n", node->token.lexeme);
+            break;
+        case AST_LOGIC_OP:
+            printf("Logical operator: %s\n", node->token.lexeme);
+            break;
+        case AST_CAST:
+            printf("Cast: %s\n", node->token.lexeme);
+            break;
+        case AST_NULL:
+            printf("Null\n");
             break;
 
         // TODO 6: Add cases for new node types
