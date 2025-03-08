@@ -372,6 +372,9 @@ void print_ast(ASTNode *node, int level) {
         case AST_ASSIGN:
             printf("Assign\n");
             break;
+        case AST_PRINT:
+            printf("Print\n");
+            break;
         case AST_NUMBER:
             printf("Number: %s\n", node->token.lexeme);
             break;
@@ -380,6 +383,59 @@ void print_ast(ASTNode *node, int level) {
             break;
         case AST_STRINGCHAR:
             printf("String/Char: %s\n", node->token.lexeme);
+            break;
+        //control flow cases
+        case AST_IF:
+            printf("If statement\n");
+            break;
+        case AST_ELSE:
+            printf("Else statement\n");
+            break;
+        case AST_WHILE:
+            printf("While statement\n");
+            break;
+        case AST_FOR:
+            printf("For statement\n");
+            break;
+        case AST_UNTIL:
+            printf("Repeat-Until statement\n");
+            break;
+        case AST_BREAK:
+            printf("Break statement\n");
+            break;
+        //function node types
+        case AST_FUNCTION_DECL:
+            printf("Function declaration: %s\n", node->token.lexeme);
+            break;
+        case AST_FUNCTION_CALL:
+            printf("Function call: %s\n", node->token.lexeme);
+        case AST_RETURN:
+            printf("Return statement\n");
+            break;
+        case AST_BLOCK:
+            printf("Block\n");
+            break;
+        case AST_PARAM_LIST:
+            printf("Parameter list\n");
+            break;
+        //expression cases
+        case AST_BINOP:
+            printf("Binary operator: %s\n", node->token.lexeme);
+            break;
+        case AST_UNARYOP:
+            printf("Unary operator: %s\n", node->token.lexeme);
+            break;
+        case AST_COMPARISON:
+            printf("Comparison operator: %s\n", node->token.lexeme);
+            break;
+        case AST_LOGIC_OP:
+            printf("Logical operator: %s\n", node->token.lexeme);
+            break;
+        case AST_CAST:
+            printf("Cast: %s\n", node->token.lexeme);
+            break;
+        case AST_NULL:
+            printf("Null\n");
             break;
 
         // TODO 6: Add cases for new node types
@@ -404,7 +460,32 @@ void free_ast(ASTNode *node) {
     free_ast(node->right);
     free(node);
 }
+char *read_file(const char *filename) {
+    FILE *file = fopen(filename, "r");
+    if (!file) {
+        perror("Error opening file");
+        return NULL;
+    }
 
+    // Seek to the end to get the file size
+    fseek(file, 0, SEEK_END);
+    long file_size = ftell(file);
+    rewind(file);
+
+    // Allocate memory and read the file contents
+    char *buffer = (char *)malloc(file_size + 1);
+    if (!buffer) {
+        perror("Memory allocation failed");
+        fclose(file);
+        return NULL;
+    }
+
+    fread(buffer, 1, file_size, file);
+    buffer[file_size] = '\0';  // Null-terminate the string
+
+    fclose(file);
+    return buffer;
+}
 // Main function for testing
 int main() {
     // Test with both valid and invalid inputs
@@ -412,6 +493,7 @@ int main() {
                         "x = 42;\n" // Valid assignment
                         "string y;\n" // Valid declaration
                         "y = \"YIPPEE\";\n"; // Valid assignment
+                        "y = \"YIPPEE\";\n";; // Valid assignment
     // TODO 8: Add more test cases and read from a file:
 
     const char *invalid_input = "int x;\n"
@@ -426,5 +508,27 @@ int main() {
     print_ast(ast, 0);
 
     free_ast(ast);
+    // Read from test files
+    const char *filenames[] = {"test/input_valid.txt", "test/input_invalid.txt"};
+
+    for (int i = 0; i < 2; i++) {
+        printf("Parsing file: %s\n", filenames[i]);
+
+        char *file_input = read_file(filenames[i]);
+        if (!file_input) {
+            printf("Skipping file due to read error.\n");
+            continue;
+        }
+
+        parser_init(file_input);
+        ast = parse();
+
+        printf("\nAbstract Syntax Tree:\n");
+        print_ast(ast, 0);
+        free_ast(ast);
+
+        free(file_input);
+        printf("\n-----------------------------\n");
+    }
     return 0;
 }
