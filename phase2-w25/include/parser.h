@@ -12,6 +12,27 @@ typedef enum {
     AST_PRINT,          // Print statement
     AST_NUMBER,         // Number literal
     AST_IDENTIFIER,     // Variable name
+    // Control Flow node types
+    AST_IF,             //If statement
+    AST_ELSE,           //Else statement
+    AST_WHILE,          //while loop
+    AST_FOR,            //for loop
+    AST_REPEAT_UNTIL,   //repeat until loop
+    AST_BREAK,          //break statement
+    // Function node types
+    AST_FUNCTION_DECL, //function declaration
+    AST_FUNCTION_CALL, //function call
+    AST_RETURN,        //return statement
+    AST_BLOCK,         //block {...}
+    AST_PARAM_LIST,    //function parameters
+    //Expressions
+    AST_BINOP,         // Binary operators
+    AST_UNARYOP,       // Unary operators (i think just !)
+    AST_COMPARISON,    // Comparisons
+    AST_LOGIC_OP,      // Logical operators
+    AST_CAST,           // typecasting, not sure if were doing this
+    //Extra
+    AST_NULL,           // null values
     // TODO: Add more node types as needed
 } ASTNodeType;
 
