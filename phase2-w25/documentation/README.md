@@ -2,25 +2,24 @@
 
 ## Keywords
 |Category|Keywords|
-|--------|-----|
+|--------|----|
 |**Logic/Conditionals:**|if, else|
 |**Logic:**|while, for, until, break|
 |**IO:**|print|
-|**Data Types:**|int, float, char, bool, string, void|
+|**Data Types:**|int, char, string|
 |**Functions:**|func|
-|**Misc:**|null, true, false|
+|**Misc:**|null|
 
 ## Operators
 |||                 ||                 |||
 |--|--|-----------------|---|-----------------|-|---|
-|+ (add)|- (sub)| * (mult)        |/ (div)| % (mod)         |\|\| (log or)|&& (log and)
-||| || |++(incre)|-- (decre)
+|+ (add)|- (sub)| * (mult)        |/ (div)| % (mod)         |\|\| (log or)|&& (log and)|
 |$ (factorial)|<= (less-eq)| \>= (grt-eq)    |= (assign)| == (log eq)     |!=(log not)|! (not)
 |^^ (power)|||< (less)| \> (grt)        ||
 ## Delimiters and Punctuation
-|||||||||
-|---|---|---|---|---|---|---|---|
-|,|;|{|}|(|)|[|]|
+||||||    |||
+|---|---|---|---|---|----|---|---|
+|,|;|{|}|(| )  |[|]|
 
 ## String Literals
 Strings can be up to 100 characters in length (max 99 other characters followed by \0).
@@ -74,4 +73,3 @@ like this*/
 |ERROR_UNTERMINATED_STRING|
 |ERROR_INVALID_ESCAPE_CHARACTER|
 |ERROR_UNTERMINATED_CHARACTER|
-|ERROR_OPEN_DELIMITER|

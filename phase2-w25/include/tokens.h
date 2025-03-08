@@ -13,7 +13,7 @@ typedef enum {
     TOKEN_IF, TOKEN_ELSE,                                         // Conditionals
     TOKEN_WHILE, TOKEN_FOR, TOKEN_UNTIL, TOKEN_BREAK,             // Looping
     TOKEN_PRINT,                                                  // Output
-    TOKEN_INT, TOKEN_FLOAT, TOKEN_CHAR, TOKEN_STRING,             // Var Types
+    TOKEN_INT, TOKEN_CHAR, TOKEN_STRING,             // Var Types
     TOKEN_FUNC, TOKEN_NULL,
     TOKEN_IDENTIFIER,       // Any identifiers
     TOKEN_STRING_LITERAL,   // e.g. "SeaPlus+"

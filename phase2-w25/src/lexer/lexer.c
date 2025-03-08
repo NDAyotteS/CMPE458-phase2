@@ -23,7 +23,6 @@ static struct {
     {"break", TOKEN_BREAK},
     {"print", TOKEN_PRINT},
     {"int", TOKEN_INT},
-    {"float", TOKEN_FLOAT},
     {"char", TOKEN_CHAR},
     {"string", TOKEN_STRING},
     {"func", TOKEN_FUNC},
@@ -65,9 +64,6 @@ void print_error(ErrorType error, int line, const char *lexeme) {
         case ERROR_UNTERMINATED_CHARACTER:
             printf("Unterminated character\n");
             break;
-        case ERROR_OPEN_DELIMITER:
-            printf("Unclosed brackets\n");
-            break;
         default:
             printf("Unknown error\n");
     }
@@ -99,7 +95,6 @@ void print_token(Token token) {
         case TOKEN_BREAK:
         case TOKEN_PRINT:
         case TOKEN_INT:
-        case TOKEN_FLOAT:
         case TOKEN_CHAR:
         case TOKEN_STRING:
         case TOKEN_FUNC:

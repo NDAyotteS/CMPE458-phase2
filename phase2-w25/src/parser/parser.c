@@ -85,48 +85,51 @@ static void expect(TokenType type) {
     }
 }
 
-// Forward declarations
+// Forward declarations for functions
 static ASTNode *parse_statement(void);
 
 static ASTNode *parse_expression(void);
 
 static ASTNode *parse_assignment(void);
 
-static ASTNode *parse_string_assignment(void);
+static ASTNode* parse_block_statement(void);
 
-// TODO 3: Add parsing functions for each new statement type
+// TODO 3: COMPLETE parsing functions for each new statement type
+
+// Parses if(), if else(), and else() statements
 static ASTNode* parse_if_statement(void) {
 
 }
 
-static ASTNode* parse_else_statement(void) {
-
-}
-
+// Parses while loop statements
 static ASTNode* parse_while_statement(void) {
 
 }
 
+// Parses for loop statements
 static ASTNode* parse_for_statement(void) {
 
 }
 
+// Parses until loop statements
 static ASTNode* parse_until_statement(void) {
 
 }
 
-static ASTNode* parse_break_statement(void) {
-
-}
-
+// Parses print statements
 static ASTNode* parse_print_statement(void) {
 
 }
 
+// Parses function declarations, forward declarations, and calls
 static ASTNode* parse_func_statement(void) {
 
 }
 
+// Parses block statements (the { ... } inside of a function, if statement, loop, etc)
+static ASTNode* parse_block_statement(void) {
+
+}
 
 // Parse variable declaration: e.g. int x;
 static ASTNode *parse_declaration(void) {
@@ -192,19 +195,14 @@ static ASTNode *parse_assignment(void) {
 
 // Parse statement
 static ASTNode *parse_statement(void) {
-    if (match(TOKEN_INT) || (match(TOKEN_FLOAT)) || match(TOKEN_CHAR) || (match(TOKEN_STRING))) {
-        return parse_declaration();
-    }
-    if (match(TOKEN_IDENTIFIER)) {
-        return parse_assignment();
-    }
-
-    // TODO 4: Add cases for new statement types
-    // else if (match(TOKEN_IF)) return parse_if_statement();
-    // else if (match(TOKEN_WHILE)) return parse_while_statement();
-    // else if (match(TOKEN_REPEAT)) return parse_repeat_statement();
-    // else if (match(TOKEN_PRINT)) return parse_print_statement();
-    // ...
+    if (match(TOKEN_INT) || match(TOKEN_CHAR) || match(TOKEN_STRING)) return parse_declaration();
+    if (match(TOKEN_IDENTIFIER)) return parse_assignment();
+    if (match(TOKEN_IF)) return parse_if_statement();
+    if (match(TOKEN_WHILE)) return parse_while_statement();
+    if (match(TOKEN_FOR)) return parse_for_statement();
+    if (match(TOKEN_UNTIL)) return parse_until_statement();
+    if (match(TOKEN_PRINT)) return parse_print_statement();
+    if (match(TOKEN_FUNC)) return parse_func_statement();
 
     printf("Syntax Error: Unexpected token\n");
     exit(1);
@@ -413,8 +411,9 @@ int main() {
     const char *input = "int x;\n"// Valid declaration
                         "x = 42;\n" // Valid assignment
                         "string y;\n" // Valid declaration
-                        "y = "YIPPEE";\n"; // Valid assignment
+                        "y = \"YIPPEE\";\n"; // Valid assignment
     // TODO 8: Add more test cases and read from a file:
+
     const char *invalid_input = "int x;\n"
                                 "x = 42;\n"
                                 "int ;";
