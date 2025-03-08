@@ -86,10 +86,35 @@ static void expect(TokenType type) {
 static ASTNode *parse_statement(void);
 
 // TODO 3: Add parsing functions for each new statement type
-// static ASTNode* parse_if_statement(void) { ... }
-// static ASTNode* parse_while_statement(void) { ... }
-// static ASTNode* parse_repeat_statement(void) { ... }
-// static ASTNode* parse_print_statement(void) { ... }
+static ASTNode* parse_if_statement(void) {
+
+}
+
+static ASTNode* parse_else_statement(void) {
+
+}
+
+static ASTNode* parse_while_statement(void) {
+
+}
+
+static ASTNode* parse_for_statement(void) {
+
+}
+
+static ASTNode* parse_until_statement(void) {
+
+}
+
+static ASTNode* parse_break_statement(void) {
+
+}
+
+static ASTNode* parse_print_statement(void) {
+
+}
+
+
 // static ASTNode* parse_block(void) { ... }
 // static ASTNode* parse_factorial(void) { ... }
 
@@ -98,7 +123,7 @@ static ASTNode *parse_expression(void);
 // Parse variable declaration: int x;
 static ASTNode *parse_declaration(void) {
     ASTNode *node = create_node(AST_VARDECL);
-    advance(); // consume 'int'
+    advance(); // consume int, float, char, bool, string
 
     if (!match(TOKEN_IDENTIFIER)) {
         parse_error(PARSE_ERROR_MISSING_IDENTIFIER, current_token);
@@ -141,11 +166,13 @@ static ASTNode *parse_assignment(void) {
 
 // Parse statement
 static ASTNode *parse_statement(void) {
-    if (match(TOKEN_INT)) {
+    if (match(TOKEN_INT) || match(TOKEN_FLOAT) || match(TOKEN_CHAR) || match(TOKEN_BOOL) || match(TOKEN_STRING)) {
         return parse_declaration();
-    } else if (match(TOKEN_IDENTIFIER)) {
+    }
+    if (match(TOKEN_IDENTIFIER)) {
         return parse_assignment();
     }
+
 
 
     // TODO 4: Add cases for new statement types
