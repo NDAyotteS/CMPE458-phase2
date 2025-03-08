@@ -256,7 +256,7 @@ static ASTNode *parse_expression(void) {
                 int relation = getOperatorRelationship(operatorStack[TOS].operatorCode, lookaheadOpCode);
                 //only compare if there are items in the stack, otherwise move on
             }
-        } else if match(TOKEN_OPERATOR){
+        } else if (match(TOKEN_OPERATOR)){
 
         }
 
@@ -360,7 +360,32 @@ void free_ast(ASTNode *node) {
     free_ast(node->right);
     free(node);
 }
+char *read_file(const char *filename) {
+    FILE *file = fopen(filename, "r");
+    if (!file) {
+        perror("Error opening file");
+        return NULL;
+    }
 
+    // Seek to the end to get the file size
+    fseek(file, 0, SEEK_END);
+    long file_size = ftell(file);
+    rewind(file);
+
+    // Allocate memory and read the file contents
+    char *buffer = (char *)malloc(file_size + 1);
+    if (!buffer) {
+        perror("Memory allocation failed");
+        fclose(file);
+        return NULL;
+    }
+
+    fread(buffer, 1, file_size, file);
+    buffer[file_size] = '\0';  // Null-terminate the string
+
+    fclose(file);
+    return buffer;
+}
 // Main function for testing
 int main() {
     // Test with both valid and invalid inputs
@@ -379,5 +404,28 @@ int main() {
     print_ast(ast, 0);
 
     free_ast(ast);
+    // Read from test files
+    const char *filenames[] = {"test/input_valid.txt", "test/input_invalid.txt"};
+
+    for (int i = 0; i < 2; i++) {
+        printf("Parsing file: %s\n", filenames[i]);
+
+        char *file_input = read_file(filenames[i]);
+        if (!file_input) {
+            printf("Skipping file due to read error.\n");
+            continue;
+        }
+
+        parser_init(file_input);
+        ast = parse();
+
+        printf("\nAbstract Syntax Tree:\n");
+        print_ast(ast, 0);
+        free_ast(ast);
+
+        free(file_input);
+        printf("\n-----------------------------\n");
+    }
+
     return 0;
 }
