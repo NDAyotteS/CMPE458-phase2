@@ -369,26 +369,26 @@ Token get_next_token(const char *input, int *pos) {
     $:  $ (factorial)
 
     //RULE: Can be trailed by one repetition or an equals sign
-    +:  + (add), ++ (increment), += (add-assign)
-    -:  - (sub), -- (decrement), -= (sub-assign)
+    +:  + (add), ++ (increment)
+    -:  - (sub), -- (decrement)
 
     //RULE: Can be trailed only by an equals sign
-    *:  * (multiply), *= (multiply-assign)      NOTE: ** not an op
-    /:  / (divide), /= (divide-assign)        NOTE: // is meaningless
-    %:  % (modulo), %= (mod-assign)
+    *:  * (multiply)
+    /:  / (divide)
+    %:  % (modulo)
     =:  = (assignment), == (logic eq)
     !:  ! (bitwise not), != (logic not)
 
     //RULE: Can be trailed only by itself
-    |:  | (bitwise or), || (logical or)
-    ^:  ^ (bitwise xor), ^^ (power)
+    |:  || (logical or)
+    ^:  ^^ (power)
 
     //RULE: Can be trailed by itself or question mark and CANT standalone
-    &:  && (logical and), &? (bitwise and)   NOTE: & is a special char
+    &:  && (logical and)
     
     //RULE: Can repeat 3 times or be trailed by an equals sign
-    <:  < (less), <= (less or equal), << (shift left), <<< (rotate left)
-    >:  > (greater), >= (greater or equal), >> (shift right), >>> (rotate right)
+    <:  < (less), <= (less or equal), << (shift left)
+    >:  > (greater), >= (greater or equal), >> (shift right)
     */
     // Operator handler
     if (c == '$' || c == '+' || c == '-' || c == '*' || c == '/'
@@ -518,17 +518,6 @@ Token get_next_token(const char *input, int *pos) {
             //RULE: Can repeat 3 times or be trailed by an equals sign
             case '<':
             case '>':
-                if (c_next == c) {
-                    // <<, >>
-                    token.lexeme[0] = c;
-                    token.lexeme[1] = c;
-                    token.lexeme[2] = '\0';
-                    token.type = TOKEN_OPERATOR;
-                    *pos += 2;
-                    last_token_type = 'o'; // operator
-                    break;
-                }
-                //must be separate to prevent <=< from being valid, for example.
                 if (c_next == '=') {
                     // <=, >=
                     token.lexeme[0] = c;

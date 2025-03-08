@@ -11,12 +11,12 @@
 |**Misc:**|null, true, false|
 
 ## Operators
-|||                  ||                 |||
-|--|--|------------------|---|-----------------|-|---|
-|+ (add)|- (sub)| * (mult)         |/ (div)| % (mod)         |\|\| (log or)|&& (log and)
-|||  || |++(incre)|-- (decre)
-|$ (factorial)|<= (less-eq)| \>= (grt-eq)     |= (assign)| == (log eq)     |!=(log not)|! (not)
-|^^ (power)|<< (shift-l)| \>> (shift-r)    |< (less)| \> (grt)        ||
+|||                 ||                 |||
+|--|--|-----------------|---|-----------------|-|---|
+|+ (add)|- (sub)| * (mult)        |/ (div)| % (mod)         |\|\| (log or)|&& (log and)
+||| || |++(incre)|-- (decre)
+|$ (factorial)|<= (less-eq)| \>= (grt-eq)    |= (assign)| == (log eq)     |!=(log not)|! (not)
+|^^ (power)|||< (less)| \> (grt)        ||
 ## Delimiters and Punctuation
 |||||||||
 |---|---|---|---|---|---|---|---|

@@ -14,7 +14,6 @@
 // - blocks: { statement1; statement2; }
 // - factorial function: factorial(x)
 
-
 // Current token being processed
 static Token current_token;
 static int position = 0;
@@ -142,13 +141,11 @@ static ASTNode *parse_assignment(void) {
 
 // Parse statement
 static ASTNode *parse_statement(void) {
-    /*
     if (match(TOKEN_INT)) {
         return parse_declaration();
     } else if (match(TOKEN_IDENTIFIER)) {
         return parse_assignment();
     }
-    */
 
 
     // TODO 4: Add cases for new statement types
