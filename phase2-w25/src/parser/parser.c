@@ -106,8 +106,7 @@ static ASTNode *parse_assignment(void);
 
 static ASTNode* parse_block_statement(void);
 
-// TODO 3: COMPLETE parsing functions for each new statement type
-
+/// Parsing functions for each keyword
 // Parses if(), if else(), and else() statements
 static ASTNode* parse_if_statement(void) {
 
@@ -115,7 +114,16 @@ static ASTNode* parse_if_statement(void) {
 
 // Parses while loop statements
 static ASTNode* parse_while_statement(void) {
-
+    ASTNode *node = create_node(AST_PRINT);
+    advance(); // consume 'print'
+    expect(TO);
+    node->left = parse_expression();
+    if (!match(TOKEN_SEMICOLON)) {
+        parse_error(PARSE_ERROR_MISSING_SEMICOLON, current_token);
+        exit(1);
+    }
+    advance();
+    return node;
 }
 
 // Parses for loop statements

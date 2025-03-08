@@ -13,12 +13,15 @@ typedef enum {
     TOKEN_IF, TOKEN_ELSE,                                         // Conditionals
     TOKEN_WHILE, TOKEN_FOR, TOKEN_UNTIL, TOKEN_BREAK,             // Looping
     TOKEN_PRINT,                                                  // Output
-    TOKEN_INT, TOKEN_CHAR, TOKEN_STRING,             // Var Types
-    TOKEN_FUNC, TOKEN_NULL,
+    TOKEN_INT, TOKEN_CHAR, TOKEN_STRING,                          // Var Types
+    TOKEN_FUNC, TOKEN_NULL, TOKEN_RETURN,
     TOKEN_IDENTIFIER,       // Any identifiers
     TOKEN_STRING_LITERAL,   // e.g. "SeaPlus+"
     TOKEN_CHAR_LITERAL,     // e.g. 'c'
-    TOKEN_DELIMITER,        // e.g. {} [] ()
+    TOKEN_LEFTPARENTHESES, TOKEN_RIGHTPARENTHESES,
+    TOKEN_LEFTBRACE, TOKEN_RIGHTBRACE,
+    TOKEN_LEFTBRACKET, TOKEN_RIGHTBRACKET,
+    TOKEN_COMMA,
     TOKEN_SEMICOLON,        // e.g. ;
     TOKEN_SPECIAL_CHARACTER,// e.g. _ &
     TOKEN_ERROR             // e.g. ERROR_INVALID_CHAR

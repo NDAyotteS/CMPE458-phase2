@@ -26,6 +26,7 @@ static struct {
     {"char", TOKEN_CHAR},
     {"string", TOKEN_STRING},
     {"func", TOKEN_FUNC},
+    {"return", TOKEN_RETURN},
     {"null", TOKEN_NULL},
 };
 
@@ -98,6 +99,7 @@ void print_token(Token token) {
         case TOKEN_CHAR:
         case TOKEN_STRING:
         case TOKEN_FUNC:
+        case TOKEN_RETURN:
         case TOKEN_NULL:
             printf("KEYWORD");
             break;
@@ -110,7 +112,13 @@ void print_token(Token token) {
         case TOKEN_CHAR_LITERAL:
             printf("CHAR_LITERAL");
             break;
-        case TOKEN_DELIMITER:
+        case TOKEN_LEFTPARENTHESES:
+        case TOKEN_LEFTBRACKET:
+        case TOKEN_LEFTBRACE:
+        case TOKEN_RIGHTBRACE:
+        case TOKEN_RIGHTBRACKET:
+        case TOKEN_RIGHTPARENTHESES:
+        case TOKEN_COMMA:
             printf("DELIMITER");
             break;
         case TOKEN_SPECIAL_CHARACTER:
@@ -589,16 +597,57 @@ Token get_next_token(const char *input, int *pos) {
         return token;
     }
 
-    // Delimiter handler
-    // Bracket based Delimiters (must be closed)
-    if (c == '(' || c == '{' || c == '[' ||
-        c == ')' || c == '}' || c == ']') {
-        // should maybe write code to check for closure, but not yet
-        token.type = TOKEN_DELIMITER;
+    // Brackets, parentheses, and brace handler
+    if (c == '(') {
+        token.type = TOKEN_LEFTPARENTHESES;
         token.lexeme[0] = c;
         token.lexeme[1] = '\0';
         last_token_type = 'b'; //brackets (any type)
-        // note: could have last token type of r (regular), c {curvy}, s [square]
+        (*pos)++;
+        return token;
+    }
+
+    if (c == ')') {
+        token.type = TOKEN_RIGHTPARENTHESES;
+        token.lexeme[0] = c;
+        token.lexeme[1] = '\0';
+        last_token_type = 'b'; //brackets (any type)
+        (*pos)++;
+        return token;
+    }
+
+    if (c == '{') {
+        token.type = TOKEN_LEFTBRACE;
+        token.lexeme[0] = c;
+        token.lexeme[1] = '\0';
+        last_token_type = 'b'; //brackets (any type)
+        (*pos)++;
+        return token;
+    }
+
+    if (c == '}') {
+        token.type = TOKEN_RIGHTBRACE;
+        token.lexeme[0] = c;
+        token.lexeme[1] = '\0';
+        last_token_type = 'b'; //brackets (any type)
+        (*pos)++;
+        return token;
+    }
+
+    if (c == '[') {
+        token.type = TOKEN_LEFTBRACKET;
+        token.lexeme[0] = c;
+        token.lexeme[1] = '\0';
+        last_token_type = 'b'; //brackets (any type)
+        (*pos)++;
+        return token;
+    }
+
+    if (c == ']') {
+        token.type = TOKEN_RIGHTBRACKET;
+        token.lexeme[0] = c;
+        token.lexeme[1] = '\0';
+        last_token_type = 'b'; //brackets (any type)
         (*pos)++;
         return token;
     }
@@ -615,7 +664,7 @@ Token get_next_token(const char *input, int *pos) {
 
     // Other delimiters
     if (c == ',') {
-        token.type = TOKEN_DELIMITER;
+        token.type = TOKEN_COMMA;
         token.lexeme[0] = c;
         token.lexeme[1] = '\0';
         last_token_type = 'd'; //delimiter
