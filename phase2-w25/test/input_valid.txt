@@ -1,3 +1,6 @@
+int x;
+int y;
+int z;
 // declares
 int x;
 string y;
