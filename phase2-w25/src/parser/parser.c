@@ -1,9 +1,14 @@
 /* parser.c */
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
 #include "../../include/parser.h"
 #include "../../include/lexer.h"
 #include "../../include/tokens.h"
+#include "../../include/operators.h"
+
+
 
 
 // TODO 1: Add more parsing function declarations for:
@@ -18,7 +23,7 @@
 static Token current_token;
 static int position = 0;
 static const char *source;
-
+static const int OPERATOR_TOKEN_MAX = 128; //arbitrary
 
 static void parse_error(ParseError error, Token token) {
     // TODO 2: Add more error types for:
@@ -73,6 +78,7 @@ static int match(TokenType type) {
 }
 
 // Expect a token type or error
+// Globally advances on success
 static void expect(TokenType type) {
     if (match(type)) {
         advance();
@@ -98,7 +104,7 @@ static ASTNode *parse_expression(void);
 // Parse variable declaration: int x;
 static ASTNode *parse_declaration(void) {
     ASTNode *node = create_node(AST_VARDECL);
-    advance(); // consume 'int'
+    advance(); // consume 'int', 'float', etc. datatype token
 
     if (!match(TOKEN_IDENTIFIER)) {
         parse_error(PARSE_ERROR_MISSING_IDENTIFIER, current_token);
@@ -130,7 +136,7 @@ static ASTNode *parse_assignment(void) {
     advance();
 
     node->right = parse_expression();
-
+    // parse_expression() advances, check that statment ended.
     if (!match(TOKEN_SEMICOLON)) {
         parse_error(PARSE_ERROR_MISSING_SEMICOLON, current_token);
         exit(1);
@@ -141,6 +147,8 @@ static ASTNode *parse_assignment(void) {
 
 // Parse statement
 static ASTNode *parse_statement(void) {
+    // todo: need to add other data types here like TOKEN_FLOAT
+    // float, char, string should probably go to the same parse_declaration function tbh.
     if (match(TOKEN_INT)) {
         return parse_declaration();
     } else if (match(TOKEN_IDENTIFIER)) {
@@ -169,8 +177,96 @@ static ASTNode *parse_statement(void) {
 // - Parentheses grouping
 // - Function calls
 
+
+int getOperatorRelationship(operatorCode_t TOS, operatorCode_t Lookahead){
+    return operatorParseTable[TOS][Lookahead];
+}
+
+operatorCode_t getOperatorCode(char* operatorString){
+    //no switch statements on strings in C.
+    if(strcmp(operatorString, "!") == 0){
+        return OPCODE_NOT;
+    } else if(strcmp(operatorString, "$") == 0){
+        return OPCODE_FACTORIAL;
+    } else if(strcmp(operatorString, "^^") == 0){
+        return OPCODE_POWER;
+    } else if(strcmp(operatorString, "*") == 0){
+        return OPCODE_MULTIPLY;
+    } else if(strcmp(operatorString, "/") == 0){
+        return OPCODE_DIVIDE;
+    } else if(strcmp(operatorString, "%") == 0){
+        return OPCODE_MOD;
+    } else if(strcmp(operatorString, "+") == 0){
+        return OPCODE_ADD;
+    } else if(strcmp(operatorString, "-") == 0){
+        return OPCODE_SUB;
+    } else if(strcmp(operatorString, ">") == 0){
+        return OPCODE_GREATER;
+    } else if(strcmp(operatorString, ">=") == 0){
+        return OPCODE_GREAT_EQ;
+    } else if(strcmp(operatorString, "<=") == 0){
+        return OPCODE_LESS_EQ;
+    } else if(strcmp(operatorString, "<") == 0){
+        return OPCODE_LESSER;
+    } else if(strcmp(operatorString, "==") == 0){
+        return OPCODE_LOG_EQ;
+    } else if(strcmp(operatorString, "!=") == 0){
+        return OPCODE_NOT_EQ;
+    } else if(strcmp(operatorString, "&&") == 0){
+        return OPCODE_LOG_AND;
+    } else if(strcmp(operatorString, "||") == 0){
+        return OPCODE_LOG_OR;
+    } else{
+        //this should never actually happen
+        printf("Syntax Error: Unrecognized Operator\n");
+        exit(1);
+    }
+}
+
+typedef struct operatorCodeIndexed {
+    operatorCode_t operatorCode;
+    int index;
+} operatorCodeIndexed_t;
+
 static ASTNode *parse_expression(void) {
-    ASTNode *node;
+    //treating current as Lookahead, with previous going into TOS
+    ASTNode *node; //parent node of return object
+    Token expressionTokenArray[OPERATOR_TOKEN_MAX];
+    int tokenIndex = 0;
+
+    operatorCodeIndexed_t operatorStack [OPERATOR_TOKEN_MAX]; //contains optype information as well as the address in the accumulated list
+    int TOS = -1;
+
+    bool acceptingID = true;
+    bool acceptingOperator = false;
+
+    //scan to end of expression
+    while(current_token.type != TOKEN_SEMICOLON) {
+        expressionTokenArray[tokenIndex] = current_token; //accumulate all tokens in expression in a list
+        if(match(TOKEN_IDENTIFIER)) {
+            if (!acceptingID) {
+                perror("Syntax Error: received an unexpected identifier in expression.");
+                //todo: add error code for unexpected back to back ids
+                exit(1);
+            }
+            acceptingID = false;
+            acceptingOperator = true;
+            operatorCode_t lookaheadOpCode = OPCODE_ID;
+            if (TOS >= 0) {
+                int relation = getOperatorRelationship(operatorStack[TOS].operatorCode, lookaheadOpCode);
+                //only compare if there are items in the stack, otherwise move on
+            }
+        } else if match(TOKEN_OPERATOR){
+
+        }
+
+    }
+    //pop all remaining in stack
+    while(TOS > 0){
+
+    }
+
+
 
     if (match(TOKEN_NUMBER)) {
         node = create_node(AST_NUMBER);
@@ -186,13 +282,16 @@ static ASTNode *parse_expression(void) {
     return node;
 }
 
+
 // Parse program (multiple statements)
 static ASTNode *parse_program(void) {
+    //right recursive grammar
     ASTNode *program = create_node(AST_PROGRAM);
     ASTNode *current = program;
 
     while (!match(TOKEN_EOF)) {
-        current->left = parse_statement();
+      current->left = parse_statement();
+        // parse_statement() contains advance() calls, hence re-check
         if (!match(TOKEN_EOF)) {
             current->right = create_node(AST_PROGRAM);
             current = current->right;
