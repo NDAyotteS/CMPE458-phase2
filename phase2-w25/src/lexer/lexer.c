@@ -25,13 +25,9 @@ static struct {
     {"int", TOKEN_INT},
     {"float", TOKEN_FLOAT},
     {"char", TOKEN_CHAR},
-    {"bool", TOKEN_BOOL},
     {"string", TOKEN_STRING},
-    {"void", TOKEN_VOID},
     {"func", TOKEN_FUNC},
     {"null", TOKEN_NULL},
-    {"true", TOKEN_TRUE},
-    {"false", TOKEN_FALSE}
 };
 
 // New Keyword Checker
@@ -105,13 +101,9 @@ void print_token(Token token) {
         case TOKEN_INT:
         case TOKEN_FLOAT:
         case TOKEN_CHAR:
-        case TOKEN_BOOL:
         case TOKEN_STRING:
-        case TOKEN_VOID:
         case TOKEN_FUNC:
         case TOKEN_NULL:
-        case TOKEN_TRUE:
-        case TOKEN_FALSE:
             printf("KEYWORD");
             break;
         case TOKEN_IDENTIFIER:

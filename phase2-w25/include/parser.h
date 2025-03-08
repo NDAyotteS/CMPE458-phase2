@@ -12,12 +12,13 @@ typedef enum {
     AST_PRINT,          // Print statement
     AST_NUMBER,         // Number literal
     AST_IDENTIFIER,     // Variable name
+    AST_STRINGCHAR,     // String or Character
     // Control Flow node types
     AST_IF,             //If statement
     AST_ELSE,           //Else statement
     AST_WHILE,          //while loop
     AST_FOR,            //for loop
-    AST_REPEAT_UNTIL,   //repeat until loop
+    AST_UNTIL,          //repeat until loop
     AST_BREAK,          //break statement
     // Function node types
     AST_FUNCTION_DECL, //function declaration

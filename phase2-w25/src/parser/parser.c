@@ -8,9 +8,6 @@
 #include "../../include/tokens.h"
 #include "../../include/operators.h"
 
-
-
-
 // TODO 1: Add more parsing function declarations for:
 // - if statements: if (condition) { ... }
 // - while loops: while (condition) { ... }
@@ -91,20 +88,50 @@ static void expect(TokenType type) {
 // Forward declarations
 static ASTNode *parse_statement(void);
 
-// TODO 3: Add parsing functions for each new statement type
-// static ASTNode* parse_if_statement(void) { ... }
-// static ASTNode* parse_while_statement(void) { ... }
-// static ASTNode* parse_repeat_statement(void) { ... }
-// static ASTNode* parse_print_statement(void) { ... }
-// static ASTNode* parse_block(void) { ... }
-// static ASTNode* parse_factorial(void) { ... }
-
 static ASTNode *parse_expression(void);
 
-// Parse variable declaration: int x;
+static ASTNode *parse_assignment(void);
+
+static ASTNode *parse_string_assignment(void);
+
+// TODO 3: Add parsing functions for each new statement type
+static ASTNode* parse_if_statement(void) {
+
+}
+
+static ASTNode* parse_else_statement(void) {
+
+}
+
+static ASTNode* parse_while_statement(void) {
+
+}
+
+static ASTNode* parse_for_statement(void) {
+
+}
+
+static ASTNode* parse_until_statement(void) {
+
+}
+
+static ASTNode* parse_break_statement(void) {
+
+}
+
+static ASTNode* parse_print_statement(void) {
+
+}
+
+static ASTNode* parse_func_statement(void) {
+
+}
+
+
+// Parse variable declaration: e.g. int x;
 static ASTNode *parse_declaration(void) {
     ASTNode *node = create_node(AST_VARDECL);
-    advance(); // consume 'int', 'float', etc. datatype token
+    advance(); // consume data-type
 
     if (!match(TOKEN_IDENTIFIER)) {
         parse_error(PARSE_ERROR_MISSING_IDENTIFIER, current_token);
@@ -114,15 +141,20 @@ static ASTNode *parse_declaration(void) {
     node->token = current_token;
     advance();
 
-    if (!match(TOKEN_SEMICOLON)) {
-        parse_error(PARSE_ERROR_MISSING_SEMICOLON, current_token);
-        exit(1);
+    // Correct case
+    if(match(TOKEN_SEMICOLON)) {
+        advance();
+        return node;
     }
-    advance();
-    return node;
+    // TODO: ALLOW FOR DECLARATION ASSIGNMENTS???
+
+    // Failed case
+    parse_error(PARSE_ERROR_MISSING_SEMICOLON, current_token);
+    exit(1);
+
 }
 
-// Parse assignment: x = 5;
+// Parse assignment: e.g. x = 5; or x = 'yippee';
 static ASTNode *parse_assignment(void) {
     ASTNode *node = create_node(AST_ASSIGN);
     node->left = create_node(AST_IDENTIFIER);
@@ -135,8 +167,21 @@ static ASTNode *parse_assignment(void) {
     }
     advance();
 
-    node->right = parse_expression();
-    // parse_expression() advances, check that statment ended.
+    // For the case where the assignment is for strings, chars, or null values
+    // TODO: RUN TESTS FOR STRING DECLARATION
+    if(match(TOKEN_STRING) || match(TOKEN_CHAR)) {
+        node->right = create_node(AST_STRINGCHAR);
+        node->right->token = current_token;
+        advance();
+    } else if(match(TOKEN_NULL)) {
+            node->right = create_node(AST_NULL);
+            node->right->token = current_token;
+            advance();
+    } else { // All other assignment types
+        node->right = parse_expression();
+    }
+
+    // Parse_expression() and string assignment both advance, check that statement ended
     if (!match(TOKEN_SEMICOLON)) {
         parse_error(PARSE_ERROR_MISSING_SEMICOLON, current_token);
         exit(1);
@@ -147,14 +192,12 @@ static ASTNode *parse_assignment(void) {
 
 // Parse statement
 static ASTNode *parse_statement(void) {
-    // todo: need to add other data types here like TOKEN_FLOAT
-    // float, char, string should probably go to the same parse_declaration function tbh.
-    if (match(TOKEN_INT)) {
+    if (match(TOKEN_INT) || (match(TOKEN_FLOAT)) || match(TOKEN_CHAR) || (match(TOKEN_STRING))) {
         return parse_declaration();
-    } else if (match(TOKEN_IDENTIFIER)) {
+    }
+    if (match(TOKEN_IDENTIFIER)) {
         return parse_assignment();
     }
-
 
     // TODO 4: Add cases for new statement types
     // else if (match(TOKEN_IF)) return parse_if_statement();
@@ -337,6 +380,9 @@ void print_ast(ASTNode *node, int level) {
         case AST_IDENTIFIER:
             printf("Identifier: %s\n", node->token.lexeme);
             break;
+        case AST_STRINGCHAR:
+            printf("String/Char: %s\n", node->token.lexeme);
+            break;
 
         // TODO 6: Add cases for new node types
         // case AST_IF: printf("If\n"); break;
@@ -360,72 +406,26 @@ void free_ast(ASTNode *node) {
     free_ast(node->right);
     free(node);
 }
-char *read_file(const char *filename) {
-    FILE *file = fopen(filename, "r");
-    if (!file) {
-        perror("Error opening file");
-        return NULL;
-    }
 
-    // Seek to the end to get the file size
-    fseek(file, 0, SEEK_END);
-    long file_size = ftell(file);
-    rewind(file);
-
-    // Allocate memory and read the file contents
-    char *buffer = (char *)malloc(file_size + 1);
-    if (!buffer) {
-        perror("Memory allocation failed");
-        fclose(file);
-        return NULL;
-    }
-
-    fread(buffer, 1, file_size, file);
-    buffer[file_size] = '\0';  // Null-terminate the string
-
-    fclose(file);
-    return buffer;
-}
 // Main function for testing
 int main() {
     // Test with both valid and invalid inputs
-    const char *input = "int x;\n" // Valid declaration
-            "x = 42;\n"; // Valid assignment;
+    const char *input = "int x;\n"// Valid declaration
+                        "x = 42;\n" // Valid assignment
+                        "string y;\n" // Valid declaration
+                        "y = "YIPPEE";\n"; // Valid assignment
     // TODO 8: Add more test cases and read from a file:
     const char *invalid_input = "int x;\n"
                                 "x = 42;\n"
                                 "int ;";
 
-    printf("Parsing input:\n%s\n", invalid_input);
-    parser_init(invalid_input);
+    printf("Parsing input:\n%s\n", input);
+    parser_init(input);
     ASTNode *ast = parse();
 
     printf("\nAbstract Syntax Tree:\n");
     print_ast(ast, 0);
 
     free_ast(ast);
-    // Read from test files
-    const char *filenames[] = {"test/input_valid.txt", "test/input_invalid.txt"};
-
-    for (int i = 0; i < 2; i++) {
-        printf("Parsing file: %s\n", filenames[i]);
-
-        char *file_input = read_file(filenames[i]);
-        if (!file_input) {
-            printf("Skipping file due to read error.\n");
-            continue;
-        }
-
-        parser_init(file_input);
-        ast = parse();
-
-        printf("\nAbstract Syntax Tree:\n");
-        print_ast(ast, 0);
-        free_ast(ast);
-
-        free(file_input);
-        printf("\n-----------------------------\n");
-    }
-
     return 0;
 }
