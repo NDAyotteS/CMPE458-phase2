@@ -106,8 +106,7 @@ static ASTNode *parse_assignment(void);
 
 static ASTNode* parse_block_statement(void);
 
-// TODO 3: COMPLETE parsing functions for each new statement type
-
+/// Parsing functions for each keyword
 // Parses if(), if else(), and else() statements
 static ASTNode* parse_if_statement(void) {
 
@@ -130,11 +129,28 @@ static ASTNode* parse_until_statement(void) {
 
 // Parses print statements
 static ASTNode* parse_print_statement(void) {
+    ASTNode *node = create_node(AST_PRINT);
+    advance(); // consume print keyword
+    expect(TOKEN_LEFTPARENTHESES); // check for correct parentheses (
+    node->left = parse_expression();
+    expect(TOKEN_RIGHTPARENTHESES); // check for correct parentheses )
+    if (!match(TOKEN_SEMICOLON)) {
+        parse_error(PARSE_ERROR_MISSING_SEMICOLON, current_token);
+        exit(1);
+    }
+    advance();
+    return node;
+}
+
+// Parses function declarations
+static ASTNode* parse_function_declaration(void) {
+    ASTNode *node = create_node(AST_FUNCTION_DECL);
 
 }
 
-// Parses function declarations, forward declarations, and calls
-static ASTNode* parse_func_statement(void) {
+// Parses function call
+static ASTNode* parse_function_call(void) {
+    ASTNode *node = create_node(AST_FUNCTION_CALL);
 
 }
 
@@ -214,7 +230,7 @@ static ASTNode *parse_statement(void) {
     if (match(TOKEN_FOR)) return parse_for_statement();
     if (match(TOKEN_UNTIL)) return parse_until_statement();
     if (match(TOKEN_PRINT)) return parse_print_statement();
-    if (match(TOKEN_FUNC)) return parse_func_statement();
+    if (match(TOKEN_FUNC)) return parse_function_declaration();
 
     printf("Syntax Error: Unexpected token\n");
     exit(1);
@@ -507,7 +523,7 @@ int main() {
     print_ast(ast, 0);
 
     // Read from test files
-    const char *filenames[] = {"../../test/input_valid.txt", "../../test/input_invalid.txt"};
+    const char *filenames[] = {"../phase2-w25/test/input_valid.txt", "../phase2-w25/test/input_invalid.txt"};
 
     for (int i = 0; i < 2; i++) {
         printf("Parsing file: %s\n", filenames[i]);
