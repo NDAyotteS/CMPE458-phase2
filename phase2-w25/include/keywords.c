@@ -2,8 +2,8 @@
 #include "keywords.h"
 
 const char* keywords[NUM_KEYWORDS] = {
-    "if", "else", "switch", "case", "default",
-    "do", "while", "for", "until", "break",
+    "if", "else",
+    "while", "for", "until", "break",
     "print", "read",
     "int", "float", "char", "bool", "string", "void",
     "func",

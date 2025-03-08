@@ -158,6 +158,7 @@ Token get_next_token(const char *input, int *pos) {
     }
 
     // Number handler
+    // FIX THE IDENTIFIER/DIGIT CHECKING (10x should throw an error)
     if (isdigit(c)) {
         int i = 0;
         do {
@@ -408,15 +409,7 @@ Token get_next_token(const char *input, int *pos) {
             //Can be trailed by one repetition or an equals sign
             case '+':
             case '-':
-                if (c_next == '=') {
-                    // += and -= cases
-                    token.lexeme[0] = c;
-                    token.lexeme[1] = c_next;
-                    token.lexeme[2] = '\0';
-                    token.type = TOKEN_EQUALS;
-                    *pos += 2;
-                    last_token_type = 'q'; // equals
-                } else if(c_next == c) {
+                if(c_next == c) {
                     // ++ and -- cases
                     token.lexeme[0] = c;
                     token.lexeme[1] = c_next;
@@ -434,33 +427,33 @@ Token get_next_token(const char *input, int *pos) {
                 }
                 break;
 
-            //Can be trailed only by an equals sign
             case '*':
             case '/':
             case '%':
+                // *, /, %,
+                token.lexeme[0] = c;
+                token.lexeme[1] = '\0';
+                token.type = TOKEN_OPERATOR;
+                *pos += 1;
+                last_token_type = 'o'; // operator
+                break;
+
             case '=':
                 if (c_next == '=') {
-                    // *=, /=, %=, ==
+                    // == case
                     token.lexeme[0] = c;
                     token.lexeme[1] = c_next;
                     token.lexeme[2] = '\0';
-                    token.type = TOKEN_EQUALS;
-                    if (c == '=') {
-                        token.type = TOKEN_COMPARITIVE;
-                        last_token_type = 'c'; // comparative
-                    }
+                    token.type = TOKEN_COMPARITIVE;
                     *pos += 2;
-                    last_token_type = 'q'; // equals
+                    last_token_type = 'c'; // comparative
                 } else {
-                    // *, /, %, =
+                    // =
                     token.lexeme[0] = c;
                     token.lexeme[1] = '\0';
-                    token.type = TOKEN_OPERATOR;
-                    if (c=='=') {
-                        token.type = TOKEN_EQUALS;
-                    }
+                    token.type = TOKEN_EQUALS;
                     *pos += 1;
-                    last_token_type = 'o'; // operator
+                    last_token_type = 'e'; // equals
                 }
                 break;
 
@@ -490,16 +483,9 @@ Token get_next_token(const char *input, int *pos) {
                     token.lexeme[0] = c;
                     token.lexeme[1] = c_next;
                     token.lexeme[2] = '\0';
-                    token.type = TOKEN_COMPARITIVE;
-                    *pos += 2;
-                    last_token_type = 'c'; // comparative
-                } else {
-                    // |
-                    token.lexeme[0] = c;
-                    token.lexeme[1] = '\0';
                     token.type = TOKEN_OPERATOR;
-                    *pos += 1;
-                    last_token_type = 'o'; // operator
+                    *pos += 2;
+                    last_token_type = 'o'; // comparative
                 }
                 break;
 
@@ -513,13 +499,6 @@ Token get_next_token(const char *input, int *pos) {
                     token.type = TOKEN_OPERATOR;
                     *pos += 2;
                     last_token_type = 'o'; // operator
-                } else {
-                    // ^
-                    token.lexeme[0] = c;
-                    token.lexeme[1] = '\0';
-                    token.type = TOKEN_OPERATOR;
-                    *pos += 1;
-                    last_token_type = 'o'; // operator
                 }
                 break;
 
@@ -530,17 +509,9 @@ Token get_next_token(const char *input, int *pos) {
                     token.lexeme[0] = c;
                     token.lexeme[1] = c_next;
                     token.lexeme[2] = '\0';
-                    token.type = TOKEN_COMPARITIVE;
-                    *pos += 2;
-                    last_token_type = 'c'; // comparative
-                } else if (c_next == '?') {
-                    // &?
-                    token.lexeme[0] = c;
-                    token.lexeme[1] = c_next;
-                    token.lexeme[2] = '\0';
                     token.type = TOKEN_OPERATOR;
                     *pos += 2;
-                    last_token_type = 'o'; // operator
+                    last_token_type = 'c'; // comparative
                 }
                 break;
 
@@ -548,26 +519,13 @@ Token get_next_token(const char *input, int *pos) {
             case '<':
             case '>':
                 if (c_next == c) {
-                    // <<, <<<, >>, >>>
-                    //input of *pos+2 should be in bound because c_next was a regular character.
-                    if (input[*pos + 2] == c) {
-                        // <<<, >>>
-                        token.lexeme[0] = c;
-                        token.lexeme[1] = c;
-                        token.lexeme[2] = c;
-                        token.lexeme[3] = '\0';
-                        token.type = TOKEN_OPERATOR;
-                        *pos += 3;
-                        last_token_type = 'o'; // operator
-                    } else {
-                        // <<, >>
-                        token.lexeme[0] = c;
-                        token.lexeme[1] = c;
-                        token.lexeme[2] = '\0';
-                        token.type = TOKEN_OPERATOR;
-                        *pos += 2;
-                        last_token_type = 'o'; // operator
-                    }
+                    // <<, >>
+                    token.lexeme[0] = c;
+                    token.lexeme[1] = c;
+                    token.lexeme[2] = '\0';
+                    token.type = TOKEN_OPERATOR;
+                    *pos += 2;
+                    last_token_type = 'o'; // operator
                     break;
                 }
                 //must be separate to prevent <=< from being valid, for example.

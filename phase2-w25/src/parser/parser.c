@@ -142,13 +142,14 @@ static ASTNode *parse_assignment(void) {
 
 // Parse statement
 static ASTNode *parse_statement(void) {
-    /* ADD STUFF BACK LATER
+    /*
     if (match(TOKEN_INT)) {
         return parse_declaration();
     } else if (match(TOKEN_IDENTIFIER)) {
         return parse_assignment();
     }
     */
+
 
     // TODO 4: Add cases for new statement types
     // else if (match(TOKEN_IF)) return parse_if_statement();

@@ -3,21 +3,20 @@
 ## Keywords
 |Category|Keywords|
 |--------|--------|
-|**Logic/Conditionals:**|if, else, switch, case, default|
-|**Logic:**|do, while, for, until, break|
+|**Logic/Conditionals:**|if, else|
+|**Logic:**|while, for, until, break|
 |**IO:**|print, read|
 |**Data Types:**|int, float, char, bool, string, void|
 |**Functions:**|func|
 |**Misc:**|null, true, false|
 
 ## Operators
-||||||||
-|---|---|---|---|---|---|---|
-|+ (add)|- (sub)|* (mult)|/ (div)|% (mod)|\|\| (log or)|&& (log and)
-|+= (add-assign)|-= (sub-assign)|*= (mult-assign)|/= (div-assign)|%= (mod-assign)|++(incre)|-- (decre)
-|$ (factorial)|<= (less-eq)|>= (grt-eq)|= (assign)|== (log eq)|!=(log not)|! (not)
-|^^ (power)|<< (shift-l)|>> (shift-r)|< (less)|> (grt)|\| (b.w. or)|&? (b.w. and)
-|^ (b.w. xor)|<<< (rot-l)|>>> (rot-r)||||
+|||                  ||                 |||
+|--|--|------------------|---|-----------------|-|---|
+|+ (add)|- (sub)| * (mult)         |/ (div)| % (mod)         |\|\| (log or)|&& (log and)
+|||  || |++(incre)|-- (decre)
+|$ (factorial)|<= (less-eq)| \>= (grt-eq)     |= (assign)| == (log eq)     |!=(log not)|! (not)
+|^^ (power)|<< (shift-l)| \>> (shift-r)    |< (less)| \> (grt)        ||
 ## Delimiters and Punctuation
 |||||||||
 |---|---|---|---|---|---|---|---|

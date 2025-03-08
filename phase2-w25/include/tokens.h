@@ -14,11 +14,12 @@
 typedef enum {
     TOKEN_EOF,
     TOKEN_NUMBER,           // e.g. 123
-    TOKEN_OPERATOR,         // e.g. + - * / % && ||
+    TOKEN_OPERATOR,         // e.g. + - * / %
     TOKEN_EQUALS,           // e.g. += -= =
-    TOKEN_COMPARITIVE,       //
+    TOKEN_COMPARITIVE,      // e.g. == !=
     TOKEN_ERROR,            // e.g. ERROR_INVALID_CHAR
     TOKEN_KEYWORD,          // e.g. func if until while for
+    // EACH KEYWORD NEEDS A TOKEN
     TOKEN_IDENTIFIER,
     TOKEN_STRING_LITERAL,   // e.g. "SeaPlus+"
     TOKEN_CHAR_LITERAL,     // e.g. 'c'
