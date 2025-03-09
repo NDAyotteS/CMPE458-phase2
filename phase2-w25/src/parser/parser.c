@@ -8,21 +8,14 @@
 #include "../../include/tokens.h"
 #include "../../include/operators.h"
 
-// TODO 1: Add more parsing function declarations for:
-// - if statements: if (condition) { ... }
-// - while loops: while (condition) { ... }
-// - repeat-until: repeat { ... } until (condition)
-// - print statements: print x;
-// - blocks: { statement1; statement2; }
-// - factorial function: factorial(x)
-
 // Current token being processed
 static Token current_token;
 static int position = 0;
 static const char *source;
 static const int OPERATOR_TOKEN_MAX = 128; //arbitrary
 
-// ---PARSER ERROR OUTPUTS FUNCTIONS---
+/* ---PARSER ERROR OUTPUTS FUNCTIONS--- */
+
 static void parse_error(ParseError error, Token token) {
     printf("Parse Error at line %d: ", token.line);
     switch (error) {
@@ -72,7 +65,8 @@ Token lookahead(void) {
     return get_next_token(source, &tempPos);
 }
 
-// ---PARSER FLOW AND CONTROL FUNCTIONS---
+/* ---PARSER FLOW AND CONTROL FUNCTIONS--- */
+
 // Create a new AST node
 static ASTNode *create_node(ASTNodeType type) {
     ASTNode *node = malloc(sizeof(ASTNode));
@@ -108,7 +102,8 @@ static ASTNode *parse_expression(void);
 static ASTNode *parse_assignment_or_function(void);
 static ASTNode* parse_block_statement(void);
 
-// ---PARSING FUNCTIONS FOR KEYWORDS AND PREMADE FUNCTIONS---
+/* ---PARSING FUNCTIONS FOR KEYWORDS AND PRE-MADE FUNCTIONS--- */
+
 // Parses if() statements
 static ASTNode* parse_if_statement(void) {
     ASTNode *node = create_node(AST_IF);
@@ -267,7 +262,8 @@ static ASTNode* parse_block_statement(void) {
 }
 
 
-// ---PARSING FUNCTIONS FOR BASIC DECLARATIONS AND ASSIGNMENTS---
+/* ---PARSING FUNCTIONS FOR BASIC DECLARATIONS AND ASSIGNMENTS--- */
+
 // Parse variable declaration: e.g. int x;
 static ASTNode *parse_declaration(void) {
     ASTNode *node = create_node(AST_VARDECL);
@@ -463,7 +459,8 @@ static ASTNode *parse_expression(void) {
 
 
 
-// ---PARSER INITIALIZATION AND OUTPUT FUNCTIONS---
+/* ---PARSER INITIALIZATION AND OUTPUT FUNCTIONS--- */
+
 // Parse program (multiple statements)
 static ASTNode *parse_program(void) {
     //right recursive grammar
@@ -591,6 +588,8 @@ void free_ast(ASTNode *node) {
     free_ast(node->right);
     free(node);
 }
+
+// For reading input files
 char *read_file(const char *filename) {
     FILE *file = fopen(filename, "r");
     if (!file) {
