@@ -520,6 +520,7 @@ static ASTNode *parse_logical_or(void) {
 }
 
 static ASTNode *parse_expression(void) {
+    printf("Line: %d Pos: %d\n", current_token.line ,position);
     ASTNode *node = parse_logical_or();
     return node;
 }
