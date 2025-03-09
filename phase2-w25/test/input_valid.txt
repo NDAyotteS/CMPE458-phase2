@@ -1,37 +1,37 @@
-// declares
+# declares
 int x;
 string y;
 char c;
 int z;
 
-// Assignments
+# Assignments
 x = 42;
 y = "Hello, Parser!";
 c = 'A';
-z = x + 10 * 3;  // Ensures operator precedence
+z = x + 10 * 3;  #Ensures operator precedence
 
-// Print statement
+# Print statement
 print(x);
 print(y);
 
-// Control flow
+# Control flow
 if (x > 20) {
     print "X is large!";
 } else {
     print "X is small!";
 }
 
-// While loop
+# While loop
 while (x > 0) {
     x = x - 1;
 }
 
-// Repeat-Until loop
+# Repeat-Until loop
 repeat {
     x = x + 1;
 } until (x >= 10);
 
-// Function declaration and call
+# Function declaration and call
 func factorial_function(a) {
     int b;
     b = $a;

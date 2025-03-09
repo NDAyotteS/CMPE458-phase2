@@ -683,11 +683,10 @@ Token get_next_token(const char *input, int *pos) {
     (*pos)++;
     return token;
 }
-
 /*
 int main() {
     // get file
-    FILE *file = fopen("../phase2-w25/test/input_correct_lex.txt", "r");
+    FILE *file = fopen("../phase2-w25/test/input_valid.txt", "r");
     if (file == NULL) {
         printf("Error opening file\n");
         return 1;
@@ -736,7 +735,7 @@ int main() {
     current_line = 1;
 
     // get file
-    file = fopen("../phase2-w25/test/input_incorrect_lex.txt", "r");
+    file = fopen("../phase2-w25/test/input_invalid.txt", "r");
     if (file == NULL) {
         printf("Error opening file\n");
         return 1;

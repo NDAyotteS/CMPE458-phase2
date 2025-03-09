@@ -95,7 +95,8 @@ static void expect(TokenType type) {
     if (match(type)) {
         advance();
     } else {
-        parse_error(PARSE_ERROR_UNEXPECTED_TOKEN, current_token);
+        printf("Invalid token, got '%s' Expected type: '%d'", current_token.lexeme, type);
+
         exit(1); // Or implement error recovery
     }
 }
@@ -617,6 +618,7 @@ char *read_file(const char *filename) {
     fclose(file);
     return buffer;
 }
+
 // Main function for testing
 int main() {
     ASTNode *ast = parse();
