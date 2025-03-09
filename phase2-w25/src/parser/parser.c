@@ -22,45 +22,39 @@ static int position = 0;
 static const char *source;
 static const int OPERATOR_TOKEN_MAX = 128; //arbitrary
 
+// ---PARSER ERROR OUTPUTS FUNCTIONS---
 static void parse_error(ParseError error, Token token) {
-    // TODO 2: Add more error types for:
-    // - Missing parentheses
-    // - Missing condition
-    // - Missing block braces
-    // - Invalid operator
-    // - Function call errors
-
     printf("Parse Error at line %d: ", token.line);
     switch (error) {
         case PARSE_ERROR_UNEXPECTED_TOKEN:
-            printf("Unexpected token '%s'\n", token.lexeme);
+            printf("Unexpected token '%s' at position '%d'\n", token.lexeme, position);
             break;
         case PARSE_ERROR_MISSING_SEMICOLON:
-            printf("Missing semicolon after '%s'\n", token.lexeme);
+            printf("Missing semicolon after '%s' at position '%d'\n", token.lexeme, position);
             break;
         case PARSE_ERROR_MISSING_IDENTIFIER:
-            printf("Expected identifier after '%s'\n", token.lexeme);
+            printf("Expected identifier after '%s' at position '%d'\n", token.lexeme, position);
             break;
         case PARSE_ERROR_MISSING_EQUALS:
-            printf("Expected '=' after '%s'\n", token.lexeme);
+            printf("Expected '=' after '%s' at position '%d'\n", token.lexeme, position);
             break;
         case PARSE_ERROR_INVALID_EXPRESSION:
-            printf("Invalid expression after '%s'\n", token.lexeme);
+            printf("Invalid expression after '%s' at position '%d'\n", token.lexeme, position);
             break;
         case PARSE_ERROR_MISSING_PAREN:
-            printf("Missing parentheses after '%s'\n", token.lexeme);
+            printf("Missing parentheses after '%s' at position '%d'\n", token.lexeme, position);
             break;
         case PARSE_ERROR_MISSING_CONDITION:
-            printf("Missing condition after '%s'\n", token.lexeme);
+            printf("Missing condition after '%s' at position '%d'\n", token.lexeme, position);
             break;
         case PARSE_ERROR_MISSING_BRACE:
-            printf("Missing brace after '%s'\n", token.lexeme);
+            printf("Missing brace after '%s' at position '%d'\n", token.lexeme, position);
             break;
         case PARSE_ERROR_FUNC_CALL:
-            printf("Function call '%s'\n", token.lexeme);
+            printf("Function call '%s' at position '%d'\n", token.lexeme, position);
             break;
         case PARSE_ERROR_INVALID_FUNC_DECLARATION:
-            printf("Function declaration syntax error '%s'\n", token.lexeme);
+            printf("Function declaration syntax error '%s' at position '%d'\n", token.lexeme, position);
             break;
         default:
             printf("Unknown error\n");
@@ -78,6 +72,7 @@ Token lookahead(void) {
     return get_next_token(source, &tempPos);
 }
 
+// ---PARSER FLOW AND CONTROL FUNCTIONS---
 // Create a new AST node
 static ASTNode *create_node(ASTNodeType type) {
     ASTNode *node = malloc(sizeof(ASTNode));
@@ -109,14 +104,11 @@ static void expect(TokenType type) {
 
 // Forward declarations for functions
 static ASTNode *parse_statement(void);
-
 static ASTNode *parse_expression(void);
-
 static ASTNode *parse_assignment_or_function(void);
-
 static ASTNode* parse_block_statement(void);
 
-/// Parsing functions for each keyword
+// ---PARSING FUNCTIONS FOR KEYWORDS AND PREMADE FUNCTIONS---
 // Parses if() statements
 static ASTNode* parse_if_statement(void) {
     ASTNode *node = create_node(AST_IF);
@@ -274,6 +266,8 @@ static ASTNode* parse_block_statement(void) {
     return node;
 }
 
+
+// ---PARSING FUNCTIONS FOR BASIC DECLARATIONS AND ASSIGNMENTS---
 // Parse variable declaration: e.g. int x;
 static ASTNode *parse_declaration(void) {
     ASTNode *node = create_node(AST_VARDECL);
@@ -304,7 +298,6 @@ static ASTNode *parse_assignment_or_function(void) {
     node->left->token = current_token;
     advance();
 
-    // TODO: RUN TESTS FOR FUNCTION CALLS BEING PARSED CORRECTLY
     // Case for identifier being used to call a function
     if (match(TOKEN_LEFTPARENTHESES)) {
         node->type = AST_FUNCTION_CALL; // overwrite assign node type
@@ -319,7 +312,6 @@ static ASTNode *parse_assignment_or_function(void) {
         advance();
 
         // For the case where the assignment is for strings, chars, or null values
-        // TODO: RUN TESTS FOR STRING DECLARATION AND NULL DECLARATIONS
         if(match(TOKEN_STRING) || match(TOKEN_CHAR)) {
             node->right = create_node(AST_STRINGCHAR);
             node->right->token = current_token;
@@ -358,7 +350,7 @@ static ASTNode *parse_statement(void) {
     if (match(TOKEN_FACTORIAL)) return parse_factorial();
     if (match(TOKEN_LEFTBRACE)) return parse_block_statement();
 
-    printf("Syntax Error: Unexpected token %s\n", current_token.lexeme);
+    printf("Syntax Error: Unexpected token %s at position %d\n", current_token.lexeme, position);
     exit(1);
 }
 
@@ -470,6 +462,8 @@ static ASTNode *parse_expression(void) {
 }
 
 
+
+// ---PARSER INITIALIZATION AND OUTPUT FUNCTIONS---
 // Parse program (multiple statements)
 static ASTNode *parse_program(void) {
     //right recursive grammar
