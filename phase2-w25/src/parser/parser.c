@@ -58,12 +58,6 @@ static void advance(void) {
     current_token = get_next_token(source, &position);
 }
 
-// Hack but it works
-Token lookahead(void) {
-    int tempPos = position;
-    return get_next_token(source, &tempPos);
-}
-
 /* ---PARSER FLOW AND CONTROL FUNCTIONS--- */
 
 // Create a new AST node
@@ -275,7 +269,6 @@ static ASTNode *parse_declaration(void) {
         parse_error(PARSE_ERROR_MISSING_IDENTIFIER, current_token);
         exit(1);
     }
-
     node->token = current_token;
     advance();
 
@@ -348,59 +341,57 @@ static ASTNode *parse_statement(void) {
     if (match(TOKEN_FACTORIAL)) return parse_factorial();
     if (match(TOKEN_LEFTBRACE)) return parse_block_statement();
 
-    printf("Syntax Error: Unexpected token %s at position %d\n", current_token.lexeme, position);
+    printf("Syntax Error: Unexpected token %s at position %d line %d\n", current_token.lexeme, position, current_token.line);
     exit(1);
 }
 
-// Parse expression (currently only handles numbers and identifiers)
-
-// TODO 5: Implement expression parsing
-// Current expression parsing is basic. Need to implement:
-// - Binary operations (+-*/)
-// - Comparison operators (<, >, ==, etc.)
-// - Operator precedence
-// - Parentheses grouping
-// - Function calls
-
-
-
-
 //for things like identifiers, numbers, functions, and nested expressions
 static ASTNode *parse_non_ops(void) {
+    printf("trying non operator\n");
     ASTNode *node;
-    if (match(TOKEN_IDENTIFIER)) {
-        node = create_node(AST_IDENTIFIER);
-        advance();
-        return node;
-    } else if (match(TOKEN_NUMBER)) {
+    if (match(TOKEN_NUMBER)) {
         node = create_node(AST_NUMBER);
         advance();
         return node;
-    } else if (match(TOKEN_STRING_LITERAL) || match(TOKEN_CHAR_LITERAL)) {
+    }
+    if (match(TOKEN_IDENTIFIER)) {
+        int holdPos = position;
+        Token next_token = get_next_token(source, &position);
+        position = holdPos; // Restore position
+        if (next_token.type == TOKEN_LEFTPARENTHESES) { // function call case
+            return parse_function_call();
+        } if (next_token.type == TOKEN_FACTORIAL) { // factorial case
+            return parse_factorial();
+        }
+        // all other cases
+        node = create_node(AST_IDENTIFIER);
+        advance();
+        return node;
+    }
+    if (match(TOKEN_STRING_LITERAL) || match(TOKEN_CHAR_LITERAL)) {
         node = create_node(AST_STRINGCHAR);
         advance();
         return node;
-    } else if (match(TOKEN_FUNC)) {
-        node = create_node(AST_FUNCTION_CALL);
-    } else if (match(TOKEN_LEFTPARENTHESES)) {
+    }
+    if (match(TOKEN_LEFTPARENTHESES)) {
         advance();
         //call recursively on expression in parentheses
         node = parse_expression();
         expect(TOKEN_RIGHTPARENTHESES);//make sure it closes
         return node;
-    } else {
-        printf("Expected an identifier, number, function, or parentheses sub-expression\n");
-        printf("Token: %s\n", current_token.lexeme);
-        exit(1);
     }
+    printf("Expected an identifier, number, function, or parentheses sub-expression\n");
+    printf("Token: %s\n", current_token.lexeme);
+    exit(1);
 }
 
 static ASTNode *parse_not(void) {
-    //
+    printf("trying not\n");
     ASTNode *node = parse_non_ops();
-    while (match(TOKEN_OPERATOR) && (strcmp(current_token.lexeme,'^^')==0)) {
+    while (match(TOKEN_OPERATOR) && current_token.lexeme[0] == '!') {
         Token operator = current_token;
         advance();
+        ASTNode *left = parse_non_ops();
         ASTNode *new = create_node(AST_UNARYOP);
         new->token = operator;
         new->left = node;
@@ -411,8 +402,9 @@ static ASTNode *parse_not(void) {
 }
 
 static ASTNode *parse_pow(void) {
+    printf("trying pow\n");
     ASTNode *node = parse_not();
-    while (match(TOKEN_OPERATOR) && (strcmp(current_token.lexeme,'^^')==0)) {
+    while (match(TOKEN_OPERATOR) && (current_token.lexeme[0] == '^' && current_token.lexeme[1] == '^')){
         Token operator = current_token;
         advance();
         ASTNode *left = parse_not();
@@ -426,9 +418,9 @@ static ASTNode *parse_pow(void) {
 }
 
 static ASTNode *parse_mult_div_mod(void) {
+    printf("trying mult div\n");
     ASTNode *node = parse_pow();
-    while (match(TOKEN_OPERATOR) &&
-        ((strcmp(current_token.lexeme,'*')==0) || (strcmp(current_token.lexeme,'/')==0) || (strcmp(current_token.lexeme,'%')==0))){
+    while (match(TOKEN_OPERATOR) && (current_token.lexeme[0] == '/' || current_token.lexeme[0] == '*')){
         Token operator = current_token;
         advance();
         ASTNode *right = parse_pow();
@@ -442,9 +434,9 @@ static ASTNode *parse_mult_div_mod(void) {
 }
 
 static ASTNode *parse_add_sub(void) {
+    printf("trying add\n");
     ASTNode *node = parse_mult_div_mod();
-    while (match(TOKEN_OPERATOR) &&
-        ((strcmp(current_token.lexeme,'+')==0) || (strcmp(current_token.lexeme,'-')==0))){
+    while (match(TOKEN_OPERATOR) && (current_token.lexeme[0] == '+' || current_token.lexeme[0] == '-')) {
         Token operator = current_token;
         advance();
         ASTNode *right = parse_mult_div_mod();
@@ -458,10 +450,10 @@ static ASTNode *parse_add_sub(void) {
 }
 
 static ASTNode *parse_grt_geq_leq_les(void) {
+    printf("trying grt\n");
     ASTNode *node = parse_add_sub();
-    while (match(TOKEN_OPERATOR) &&
-        ((strcmp(current_token.lexeme,'>')==0) || (strcmp(current_token.lexeme,'>=')==0)
-            || (strcmp(current_token.lexeme,'=<')==0) || (strcmp(current_token.lexeme,'<')==0))){
+    while (match(TOKEN_COMPARITIVE) &&
+        (current_token.lexeme[0] == '>' || current_token.lexeme[0] == '<' || current_token.lexeme[1] == '=')){
         Token operator = current_token;
         advance();
         ASTNode *right = parse_add_sub();
@@ -475,9 +467,11 @@ static ASTNode *parse_grt_geq_leq_les(void) {
 }
 
 static ASTNode *parse_logical_eq_not_eq(void) {
+    printf("trying logic\n");
     ASTNode *node = parse_grt_geq_leq_les();
-    while (match(TOKEN_OPERATOR) &&
-        ((strcmp(current_token.lexeme,'==')==0) || (strcmp(current_token.lexeme,'!=')==0))){
+    while (match(TOKEN_COMPARITIVE) &&
+        ((current_token.lexeme[0] == '=' || current_token.lexeme[0] == '!')
+            && current_token.lexeme[1] == '=')) {
         Token operator = current_token;
         advance();
         ASTNode *right = parse_grt_geq_leq_les();
@@ -492,7 +486,7 @@ static ASTNode *parse_logical_eq_not_eq(void) {
 
 static ASTNode *parse_logical_and(void) {
     ASTNode *node = parse_logical_eq_not_eq();
-    while (match(TOKEN_OPERATOR) && ((strcmp(current_token.lexeme,'&')==0))){
+    while (match(TOKEN_COMPARITIVE) && current_token.lexeme[0] == '&' && current_token.lexeme[1] == '&'){
         Token operator = current_token;
         advance();
         ASTNode *right = parse_logical_eq_not_eq();
@@ -506,7 +500,7 @@ static ASTNode *parse_logical_and(void) {
 }
 static ASTNode *parse_logical_or(void) {
     ASTNode *node = parse_logical_and();
-    while (match(TOKEN_OPERATOR) && ((strcmp(current_token.lexeme,'&')==0))){
+    while (match(TOKEN_COMPARITIVE) && current_token.lexeme[0] == '|' && current_token.lexeme[1] == '|'){
         Token operator = current_token;
         advance();
         ASTNode *right = parse_logical_and();
@@ -520,6 +514,7 @@ static ASTNode *parse_logical_or(void) {
 }
 
 static ASTNode *parse_expression(void) {
+    printf("TRYING WITH LEXEME %s \n", current_token.lexeme);
     ASTNode *node = parse_logical_or();
     return node;
 }
