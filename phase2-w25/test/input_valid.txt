@@ -16,9 +16,9 @@ print(y);
 
 # Control flow
 if (x > 20) {
-    print "X is large!";
+    print("X is large!");
 } else {
-    print "X is small!";
+    print("X is small!");
 }
 
 # While loop
@@ -32,11 +32,11 @@ repeat {
 } until (x >= 10);
 
 # Function declaration and call
-func factorial_function(a) {
+func fake_factorial_function(int a) {
     int b;
     b = $a;
     return b;
 }
 
-z = factorial_function(5);
+z = fake_factorial_function(5);
 print z;

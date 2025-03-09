@@ -1,2 +1,35 @@
-char ;
-int s =;
+# Declares All Wrong
+int x
+string ;
+
+# Broken Assignments
+int x = 42;
+y = "Hello, Parser! YOU CANT PARSE THIS"
+
+# Broken Print
+print()
+
+
+# Control Flow Incorrectly
+if () {
+    # something
+} else if (x == 5) {
+    # something
+}
+
+# While loop Wrong Conditions
+while(){
+    x = x - 1;
+    break;
+}
+
+# Repeat-Until loop Wrong Conditions
+repeat {
+    x = x + 1;
+} until ();
+
+# Function declaration and call with errors
+func factorial_function(a);
+
+z = factorial_function();
+print z;
