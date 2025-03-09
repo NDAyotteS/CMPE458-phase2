@@ -197,8 +197,7 @@ static ASTNode* parse_function_declaration(void) {
     expect(TOKEN_IDENTIFIER); // check for valid Identifier function name
     expect(TOKEN_LEFTPARENTHESES); // check for correct parentheses (
 
-    // go through function arguments
-    // TODO: CHECK IF FUNCTION DECLARATION NEEDS TO SAVE IDENTIFIERS IN A TREE
+    // go through function arguments (NOT CURRENTLY SAVED IN A TREE)
     while (1) {
         // starts with keyword for variable type
         if (!match(TOKEN_INT) && !match(TOKEN_CHAR) && !match(TOKEN_STRING)) {
@@ -215,6 +214,11 @@ static ASTNode* parse_function_declaration(void) {
 }
 
 // Parses function call
+/* STATEMENTS HAVE THE FORM
+ *  func identifier(keyword identifier, keyword identifier,...){
+ *      body code
+ *  }
+ */
 static ASTNode* parse_function_call(void) {
     ASTNode *node = create_node(AST_FUNCTION_CALL);
     advance(); // consumes the ( to start the function call
@@ -223,20 +227,23 @@ static ASTNode* parse_function_call(void) {
         expect(TOKEN_IDENTIFIER); // identifier first
         if(match(TOKEN_RIGHTPARENTHESES)) break; // if the parentheses are closed the function is complete
         expect(TOKEN_COMMA); // otherwise a comma to add more variable arguments
-        // TODO: CHECK IF FUNCTION CALL NEEDS TO SAVE IDENTIFIERS IN A TREE
     }
     advance(); // move past the )
-    // the parse assignment_or_function handles the semi colon
+    // the parse assignment_or_function handles the semicolon
     return node;
 }
 
 // Parses the factorial as though it was a function
+/* STATEMENTS HAVE THE FORM
+ *  $(expression)
+ */
 static ASTNode *parse_factorial(void){
     ASTNode *node = create_node(AST_FACTORIAL);
     advance(); // consume factorial symbol $
-
-    // TODO: FACTORIAL LOGIC
-
+    expect(TOKEN_LEFTPARENTHESES); // check for correct parentheses (
+    node->left = parse_expression(); // parse expression should handle the arguments for the function
+    expect(TOKEN_RIGHTPARENTHESES); // check for correct parentheses )
+    // Need semicolon checking???
     advance();
     return node;
 }

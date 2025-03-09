@@ -1,21 +1,21 @@
 # SeaPlus+ README
 
 ## Keywords
-|Category| Keywords                    |
-|--------|-----------------------------|
-|**Logic/Conditionals:**| if, else                    |
-|**Logic:**| while, repeat, until, break |
-|**IO:**| print                       |
-|**Data Types:**| int, char, string           |
-|**Functions:**| func                        |
-|**Misc:**| null                        |
+|Category| Keywords                     |
+|--------|------------------------------|
+|**Logic/Conditionals:**| if, else                     |
+|**Logic:**| while, repeat, until, break  |
+|**IO:**| print                        |
+|**Data Types:**| int, char, string            |
+|**Functions:**| func                         |
+|**Misc:**| null, $ (factorial function) |
 
 ## Operators
-|||                 ||                 |||
-|--|--|-----------------|---|-----------------|-|---|
-|+ (add)|- (sub)| * (mult)        |/ (div)| % (mod)         |\|\| (log or)|&& (log and)|
-|$ (factorial)|<= (less-eq)| \>= (grt-eq)    |= (assign)| == (log eq)     |!=(log not)|! (not)
-|^^ (power)|||< (less)| \> (grt)        ||
+|||               ||                |               |              |
+|--|--|---------------|---|----------------|---------------|--------------|
+|+ (add)|- (sub)| * (mult)      |/ (div)| % (mod)        | \|\| (log or) | && (log and) |
+|^^ (power)|<= (less-eq)| \>= (grt-eq)  |= (assign)| == (log eq)    | !=(log not)   | ! (not)      
+|< (less)| \> (grt)||||||
 ## Delimiters and Punctuation
 ||||||    |||
 |---|---|---|---|---|----|---|---|
