@@ -30,12 +30,12 @@ while (x > 0) {
 # Repeat-Until loop
 repeat {
     x = x + 1;
-} until (x >= 10);
+} until (x == 10);
 
 # Function declaration and call
 func fake_factorial_function(int a) {
     int b;
-    b = $a;
+    b = $(a);
     return b;
 }
 
