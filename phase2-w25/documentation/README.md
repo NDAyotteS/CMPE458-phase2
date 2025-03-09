@@ -1,5 +1,5 @@
-# SeaPlus+ README
-
+# SeaPlus+ DOCUMENTATION
+# SeaPlus+ LEXER
 ## Keywords
 |Category| Keywords                     |
 |--------|------------------------------|
@@ -42,7 +42,6 @@ Unclosed double-quotes will return an ERROR_UNTERMINATED_STRING.
 Char literals are only 1 character in length, and support the same character set as String Literals.
 Tokens exceeding this length or missing with unclosed single-quotes will return an ERROR_UNTERMINATED_CHARACTER.
 ```
-//Example Characters
 'a'
 '\t'
 '2'
@@ -62,54 +61,118 @@ Multi line:
 /*Multi line comments look  
 like this*/
 ```
-# SeaPlus+ Parser
-The SeaPlus+ Parser converts SeaPlus+ source code into an Abstract Syntax Tree(AST). It enforces syntactic rules and error handling to ensure valid program execution
+# SeaPlus+ PARSER
+The SeaPlus+ Parser converts SeaPlus+ source code into an Abstract Syntax Tree (AST). It enforces syntactic rules and error handling to ensure valid program execution
 
 ## Variable Declaration
-Parses int, char, and string declarations.
-```c
+Parses int, char, and string declarations. The parser does not check that a given variable name already exists.
+```
+# valid cases
 int x;
 char y;
+string z;
+
+
+# invalid cases
+int x       # no semi-colon
+char 10x    # cannot start with numbers (must be alpha or _)
+string ;    # must have associated identifier
 ```
 ## Assignments
 Parses assignment statements. Declaration and Assignment cannot be done in the same line.
+The parser does not check if the type of assignment matches the identifiers variable type.
 ```
+# valid cases
 x = 5;
 y = 'c';
+z = "Hello World!\n"
+
+
+# invalid cases
+int x = 5;  # cannot declare and assign in same statement
+y = '\l';   # invalid escape character
 ```
 ## Expressions
-Parses numerical, logical, and string expressions
+Parses numerical, logical, and string expressions. See operators table for valid operators.
 ## Conditionals
-Parses if-else blocks
-## Loops
-Parses while, for, and repeat-until loops
+Parses if-else blocks. One line if and else blocks without {} are not supported. 
 ```
-while(condition){
-    //do something
+# valid cases
+if (x == 5){
+    # do something
+} else {
+    # do something
 }
-for(initialization; condition; update){
-    //do something
+
+if (x != 10){
+    # do something
+}
+
+
+# invalid cases
+if (x == 5) # do something ; # must have {} to contain operations
+
+if (x == 5){
+    # do something
+} else if (x == 4){ # currently we do not support else if statements (elif does not count)
+    # do something
+}
+
+```
+## Loops
+Parses while and repeat-until loops of form seen below:
+```
+# valid cases
+while(expression){
+    # do something
 }
 repeat{
-    //do something
-}until(condition)
+    # do something
+}until(expression);
+
+
+# invalid cases
+while(){ # while must have an expression within ()
+    # do something
+}
+
+repeat{
+    # do something
+}until() # until must have an expression within ()
 ```
 ## Functions
 Parses functions, because declaration and assignment cannot be done at the same time, functions do not support default values.
 ```
-func functionName(int x; int y;){
-    //do something
+# valid cases
+func functionName(int x, int y){
+    # do something
 }
+
+func functionName(){
+    # do something
+}
+
+
+# invalid cases
+func functionName(int x,){ # improper expression format
+    # do something
+}
+
+func functionName(int x,); # forward function declarations not supported
 ```
 ## Print Statements 
-Parses print operations
+Parses print operations. Can accept any expression or value.
 ```
-print(x);
+print(expression);
 ```
-## Blocks
-Parses blocks
+## Block Parsing
+For any keyword that functions using repeating/callable code (functions, loops, if and else statments), 
+the block parser is responsible for creating and organizing the AST nodes of the given code.
+
 
 ## Parser Error Generation
+Below is  a list of all errors caught by the system  during the parsing phase.
+
 | **Error Type**                      | **Error Description**                                            |
 |-------------------------------------|------------------------------------------------------------------|
 | **PARSE_ERROR_NONE**                | No parsing error occurred.                                       |

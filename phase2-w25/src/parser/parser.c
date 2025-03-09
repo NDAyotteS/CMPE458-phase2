@@ -183,18 +183,21 @@ static ASTNode* parse_function_declaration(void) {
     advance(); // consume func keyword
     expect(TOKEN_IDENTIFIER); // check for valid Identifier function name
     expect(TOKEN_LEFTPARENTHESES); // check for correct parentheses (
-
-    // go through function arguments (NOT CURRENTLY SAVED IN A TREE)
-    while (1) {
-        // starts with keyword for variable type
-        if (!match(TOKEN_INT) && !match(TOKEN_CHAR) && !match(TOKEN_STRING)) {
-            parse_error(PARSE_ERROR_INVALID_FUNC_DECLARATION, current_token);
-            exit(1);
+    // if not immediately followed by parentheses, go through arguments
+    if(!match(TOKEN_RIGHTPARENTHESES)) {
+        // go through function arguments (NOT CURRENTLY SAVED IN A TREE)
+        while (1) {
+            // starts with keyword for variable type
+            if (!match(TOKEN_INT) && !match(TOKEN_CHAR) && !match(TOKEN_STRING)) {
+                parse_error(PARSE_ERROR_INVALID_FUNC_DECLARATION, current_token);
+                exit(1);
+            }
+            expect(TOKEN_IDENTIFIER); // followed by identifier
+            if(match(TOKEN_RIGHTPARENTHESES)) break; // if the parentheses are closed the function is complete
+            expect(TOKEN_COMMA); // otherwise a comma to add more variable arguments
         }
-        expect(TOKEN_IDENTIFIER); // followed by identifier
-        if(match(TOKEN_RIGHTPARENTHESES)) break; // if the parentheses are closed the function is complete
-        expect(TOKEN_COMMA); // otherwise a comma to add more variable arguments
     }
+
     advance(); // move past the )
     node->right = parse_statement(); // block statement saved to right node (handled by parse_statement)
     return node;
