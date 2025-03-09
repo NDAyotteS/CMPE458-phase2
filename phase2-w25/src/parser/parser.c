@@ -72,6 +72,12 @@ static void advance(void) {
     current_token = get_next_token(source, &position);
 }
 
+// Hack but it works
+Token lookahead(void) {
+    int tempPos = position;
+    return get_next_token(source, &tempPos);
+}
+
 // Create a new AST node
 static ASTNode *create_node(ASTNodeType type) {
     ASTNode *node = malloc(sizeof(ASTNode));
@@ -338,9 +344,6 @@ static ASTNode *parse_statement(void) {
 // - Function calls
 
 
-int getOperatorRelationship(operatorCode_t TOS, operatorCode_t Lookahead){
-    return operatorParseTable[TOS][Lookahead];
-}
 
 operatorCode_t getOperatorCode(char* operatorString){
     //no switch statements on strings in C.
@@ -383,63 +386,58 @@ operatorCode_t getOperatorCode(char* operatorString){
     }
 }
 
-typedef struct operatorCodeIndexed {
-    operatorCode_t operatorCode;
-    int index;
-} operatorCodeIndexed_t;
+static ASTNode *parse_not(void) {
 
+}
+
+static ASTNode *parse_pow(void) {
+
+}
+
+static ASTNode *parse_mult_div_mod(void) {
+
+}
+
+static ASTNode *parse_add_sub(void) {
+
+}
+
+static ASTNode *parse_grt_geq_leq_les(void) {
+
+}
+
+static ASTNode *parse_logical_eq_not_eq(void) {
+
+}
+
+static ASTNode *parse_logical_and(void) {
+
+}
+static ASTNode *parse_logical_or(void) {
+
+}
 static ASTNode *parse_expression(void) {
-    //treating current as Lookahead, with previous going into TOS
-    ASTNode *node; //parent node of return object
-    Token expressionTokenArray[OPERATOR_TOKEN_MAX];
-    int tokenIndex = 0;
 
-    operatorCodeIndexed_t operatorStack [OPERATOR_TOKEN_MAX]; //contains optype information as well as the address in the accumulated list
-    int TOS = -1;
+// OPCODE_ID=0, //used only for parse table
+// OPCODE_NOT, //NOT is left assoc
+// OPCODE_FACTORIAL, //factorials take math precedence over power, left assoc
+// OPCODE_POWER, //right assoc
+// OPCODE_MULTIPLY, OPCODE_DIVIDE, OPCODE_MOD, //all left assoc
+// OPCODE_ADD, OPCODE_SUB, //left assoc
+// OPCODE_GREATER, OPCODE_GREAT_EQ, OPCODE_LESS_EQ, OPCODE_LESSER, //left assoc, basing on C grammar
+// OPCODE_LOG_EQ, OPCODE_NOT_EQ, //left assoc, basing on C grammar
+// OPCODE_LOG_AND, //left assoc, basing on C grammar
+// OPCODE_LOG_OR, //left assoc, basing on C grammar
 
-    bool acceptingID = true;
-    bool acceptingOperator = false;
-
-    //scan to end of expression
-    while(current_token.type != TOKEN_SEMICOLON) {
-        expressionTokenArray[tokenIndex] = current_token; //accumulate all tokens in expression in a list
-        if(match(TOKEN_IDENTIFIER)) {
-            if (!acceptingID) {
-                perror("Syntax Error: received an unexpected identifier in expression.");
-                //todo: add error code for unexpected back to back ids
-                exit(1);
-            }
-            acceptingID = false;
-            acceptingOperator = true;
-            operatorCode_t lookaheadOpCode = OPCODE_ID;
-            if (TOS >= 0) {
-                int relation = getOperatorRelationship(operatorStack[TOS].operatorCode, lookaheadOpCode);
-                //only compare if there are items in the stack, otherwise move on
-            }
-        } else if (match(TOKEN_OPERATOR)){
-
-        }
-
-    }
-    //pop all remaining in stack
-    while(TOS > 0){
-
-    }
-
-
-
-    if (match(TOKEN_NUMBER)) {
-        node = create_node(AST_NUMBER);
-        advance();
-    } else if (match(TOKEN_IDENTIFIER)) {
-        node = create_node(AST_IDENTIFIER);
-        advance();
-    } else {
-        printf("Syntax Error: Expected expression\n");
+    ASTNode *parent = create_node(AST_EXPRESSION);
+    parent->left = parse_logical_or();
+    //if, after parsing, there is an expression terminator we are okay.
+    advance();
+    if (!(match(TOKEN_COMMA) || match(TOKEN_SEMICOLON) || match(TOKEN_RIGHTBRACE) || match(TOKEN_RIGHTBRACKET) || match(TOKEN_RIGHTPARENTHESES))) {
+        printf("Syntax Error: Expression was not terminated.\n");
         exit(1);
     }
-
-    return node;
+    return parent;
 }
 
 

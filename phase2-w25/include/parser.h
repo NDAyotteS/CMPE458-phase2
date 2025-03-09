@@ -26,6 +26,7 @@ typedef enum {
     AST_RETURN,        //return statement
     AST_BLOCK,         //block {...}
     //Expressions
+    AST_EXPRESSION,    // Unresolved state for AST nodes in expression parser
     AST_BINOP,         // Binary operators
     AST_UNARYOP,       // Unary operators (i think just !)
     AST_COMPARISON,    // Comparisons

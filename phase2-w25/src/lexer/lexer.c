@@ -457,22 +457,12 @@ Token get_next_token(const char *input, int *pos) {
             //Can be trailed by one repetition or an equals sign
             case '+':
             case '-':
-                if(c_next == c) {
-                    // ++ and -- cases
-                    token.lexeme[0] = c;
-                    token.lexeme[1] = c_next;
-                    token.lexeme[2] = '\0';
-                    token.type = TOKEN_OPERATOR;
-                    *pos += 2;
-                    last_token_type = 'o'; // operator
-                } else {
-                    // +, - case
-                    token.lexeme[0] = c;
-                    token.lexeme[1] = '\0';
-                    token.type = TOKEN_OPERATOR;
-                    *pos += 1;
-                    last_token_type = 'o'; // operator
-                }
+                // +, - case
+                token.lexeme[0] = c;
+                token.lexeme[1] = '\0';
+                token.type = TOKEN_OPERATOR;
+                *pos += 1;
+                last_token_type = 'o'; // operator
                 break;
 
             case '*':
