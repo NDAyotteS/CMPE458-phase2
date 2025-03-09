@@ -62,10 +62,12 @@ Multi line:
 like this*/
 ```
 # SeaPlus+ PARSER
-The SeaPlus+ Parser converts SeaPlus+ source code into an Abstract Syntax Tree (AST). It enforces syntactic rules and error handling to ensure valid program execution
+The SeaPlus+ Parser converts SeaPlus+ source code into an Abstract Syntax Tree (AST). It enforces syntactic 
+rules and error handling to ensure valid program execution
 
 ## Variable Declaration
-Parses int, char, and string declarations. The parser does not check that a given variable name already exists.
+Parses int, char, and string declarations. The parser does not check that a given variable name already exists 
+and will accept anything that meets the grammatical requirements of the type.
 ```
 # valid cases
 int x;
@@ -80,10 +82,13 @@ string ;    # must have associated identifier
 ```
 ## Assignments
 Parses assignment statements. Declaration and Assignment cannot be done in the same line.
-The parser does not check if the type of assignment matches the identifiers variable type.
+The parser does not check if the type of assignment matches the identifiers variable type and only worries about
+the statement matching the grammatical requirements of "identifier = expression;"
+
+NOTE: expression can simply be a number, character, or string and the code handles that separately.
 ```
 # valid cases
-x = 5;
+x = 5 + 100;
 y = 'c';
 z = "Hello World!\n"
 
@@ -94,8 +99,25 @@ y = '\l';   # invalid escape character
 ```
 ## Expressions
 Parses numerical, logical, and string expressions. See operators table for valid operators.
+
+Any expression is valid as long as it meets these rules:
+
+1. all operators exist (lexer can determine token type)
+2. no repeated operators (! is an exception)
+3. no repeated identifiers 
+4. all parentheses must be closed 
+5. must end in ;
+
+The parser does not check that types are valid, as such a string could be added to an int at this phase 
+and be considered valid.
 ## Conditionals
-Parses if-else blocks. One line if and else blocks without {} are not supported. 
+Only supports if and else blocks.
+
+One line if and else blocks without {} are not supported.
+
+The cases within parentheses cannot be empty and must contain some kind of expression.
+
+Does not currently support else if or elif.
 ```
 # valid cases
 if (x == 5){
@@ -112,6 +134,10 @@ if (x != 10){
 # invalid cases
 if (x == 5) # do something ; # must have {} to contain operations
 
+if (){ # does not have an expression
+    # do something
+}
+
 if (x == 5){
     # do something
 } else if (x == 4){ # currently we do not support else if statements (elif does not count)
@@ -120,7 +146,12 @@ if (x == 5){
 
 ```
 ## Loops
-Parses while and repeat-until loops of form seen below:
+Parses while and repeat-until loops.
+
+All loops must have an expression as their loop case.
+
+The parser does not check that the given expression is a logical one, and as such non-logical 
+statements (like the expression 5+5) would be accepted and considered okay.
 ```
 # valid cases
 while(expression){
@@ -141,7 +172,10 @@ repeat{
 }until() # until must have an expression within ()
 ```
 ## Functions
-Parses functions, because declaration and assignment cannot be done at the same time, functions do not support default values.
+Parses functions, because declaration and assignment cannot be done at the same time, 
+functions do not support default values.
+
+Forward function declaration does not exist (see invalid case 2).
 ```
 # valid cases
 func functionName(int x, int y){
@@ -158,10 +192,14 @@ func functionName(int x,){ # improper expression format
     # do something
 }
 
-func functionName(int x,); # forward function declarations not supported
+func functionName(int x); # forward function declarations not supported
+
+func functionName(int x = 0){ # cannot assign default values
+    # do something
+}
 ```
 ## Print Statements 
-Parses print operations. Can accept any expression or value.
+Parses print operations. Can accept any expression or value. Has no restrictions on what the expression is.
 ```
 print(expression);
 ```
