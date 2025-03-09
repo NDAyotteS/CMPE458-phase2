@@ -1,6 +1,3 @@
-int x;
-int y;
-int z;
 // declares
 int x;
 string y;
@@ -14,8 +11,8 @@ c = 'A';
 z = x + 10 * 3;  // Ensures operator precedence
 
 // Print statement
-print x;
-print y;
+print(x);
+print(y);
 
 // Control flow
 if (x > 20) {
