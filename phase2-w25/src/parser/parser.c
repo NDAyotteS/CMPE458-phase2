@@ -6,7 +6,6 @@
 #include "../../include/parser.h"
 #include "../../include/lexer.h"
 #include "../../include/tokens.h"
-#include "../../include/operators.h"
 
 // Current token being processed
 static Token current_token;
@@ -365,99 +364,164 @@ static ASTNode *parse_statement(void) {
 
 
 
-operatorCode_t getOperatorCode(char* operatorString){
-    //no switch statements on strings in C.
-    if(strcmp(operatorString, "!") == 0){
-        return OPCODE_NOT;
-    } else if(strcmp(operatorString, "$") == 0){
-        return OPCODE_FACTORIAL;
-    } else if(strcmp(operatorString, "^^") == 0){
-        return OPCODE_POWER;
-    } else if(strcmp(operatorString, "*") == 0){
-        return OPCODE_MULTIPLY;
-    } else if(strcmp(operatorString, "/") == 0){
-        return OPCODE_DIVIDE;
-    } else if(strcmp(operatorString, "%") == 0){
-        return OPCODE_MOD;
-    } else if(strcmp(operatorString, "+") == 0){
-        return OPCODE_ADD;
-    } else if(strcmp(operatorString, "-") == 0){
-        return OPCODE_SUB;
-    } else if(strcmp(operatorString, ">") == 0){
-        return OPCODE_GREATER;
-    } else if(strcmp(operatorString, ">=") == 0){
-        return OPCODE_GREAT_EQ;
-    } else if(strcmp(operatorString, "<=") == 0){
-        return OPCODE_LESS_EQ;
-    } else if(strcmp(operatorString, "<") == 0){
-        return OPCODE_LESSER;
-    } else if(strcmp(operatorString, "==") == 0){
-        return OPCODE_LOG_EQ;
-    } else if(strcmp(operatorString, "!=") == 0){
-        return OPCODE_NOT_EQ;
-    } else if(strcmp(operatorString, "&&") == 0){
-        return OPCODE_LOG_AND;
-    } else if(strcmp(operatorString, "||") == 0){
-        return OPCODE_LOG_OR;
-    } else{
-        //this should never actually happen
-        printf("Syntax Error: Unrecognized Operator\n");
+
+//for things like identifiers, numbers, functions, and nested expressions
+static ASTNode *parse_non_ops(void) {
+    ASTNode *node;
+    if (match(TOKEN_IDENTIFIER)) {
+        node = create_node(AST_IDENTIFIER);
+        advance();
+        return node;
+    } else if (match(TOKEN_NUMBER)) {
+        node = create_node(AST_NUMBER);
+        advance();
+        return node;
+    } else if (match(TOKEN_STRING_LITERAL) || match(TOKEN_CHAR_LITERAL)) {
+        node = create_node(AST_STRINGCHAR);
+        advance();
+        return node;
+    } else if (match(TOKEN_FUNC)) {
+        node = create_node(AST_FUNCTION_CALL);
+    } else if (match(TOKEN_LEFTPARENTHESES)) {
+        advance();
+        //call recursively on expression in parentheses
+        node = parse_expression();
+        expect(TOKEN_RIGHTPARENTHESES);//make sure it closes
+        return node;
+    } else {
+        printf("Expected an identifier, number, function, or parentheses sub-expression\n");
+        printf("Token: %s\n", current_token.lexeme);
         exit(1);
     }
 }
 
 static ASTNode *parse_not(void) {
-
+    //
+    ASTNode *node = parse_non_ops();
+    while (match(TOKEN_OPERATOR) && (strcmp(current_token.lexeme,'^^')==0)) {
+        Token operator = current_token;
+        advance();
+        ASTNode *new = create_node(AST_UNARYOP);
+        new->token = operator;
+        new->left = node;
+        new->right;
+        node = new;
+    }
+    return node;
 }
 
 static ASTNode *parse_pow(void) {
-
+    ASTNode *node = parse_not();
+    while (match(TOKEN_OPERATOR) && (strcmp(current_token.lexeme,'^^')==0)) {
+        Token operator = current_token;
+        advance();
+        ASTNode *left = parse_not();
+        ASTNode *new = create_node(AST_BINOP);
+        new->token = operator;
+        new->left = left;
+        new->right = node;
+        node = new;
+    }
+    return node;
 }
 
 static ASTNode *parse_mult_div_mod(void) {
-
+    ASTNode *node = parse_pow();
+    while (match(TOKEN_OPERATOR) &&
+        ((strcmp(current_token.lexeme,'*')==0) || (strcmp(current_token.lexeme,'/')==0) || (strcmp(current_token.lexeme,'%')==0))){
+        Token operator = current_token;
+        advance();
+        ASTNode *right = parse_pow();
+        ASTNode *new = create_node(AST_BINOP);
+        new->token = operator;
+        new->left = node;
+        new->right = right;
+        node = new;
+    }
+    return node;
 }
 
 static ASTNode *parse_add_sub(void) {
-
+    ASTNode *node = parse_mult_div_mod();
+    while (match(TOKEN_OPERATOR) &&
+        ((strcmp(current_token.lexeme,'+')==0) || (strcmp(current_token.lexeme,'-')==0))){
+        Token operator = current_token;
+        advance();
+        ASTNode *right = parse_mult_div_mod();
+        ASTNode *new = create_node(AST_BINOP);
+        new->token = operator;
+        new->left = node;
+        new->right = right;
+        node = new;
+        }
+    return node;
 }
 
 static ASTNode *parse_grt_geq_leq_les(void) {
-
+    ASTNode *node = parse_add_sub();
+    while (match(TOKEN_OPERATOR) &&
+        ((strcmp(current_token.lexeme,'>')==0) || (strcmp(current_token.lexeme,'>=')==0)
+            || (strcmp(current_token.lexeme,'=<')==0) || (strcmp(current_token.lexeme,'<')==0))){
+        Token operator = current_token;
+        advance();
+        ASTNode *right = parse_add_sub();
+        ASTNode *new = create_node(AST_BINOP);
+        new->token = operator;
+        new->left = node;
+        new->right = right;
+        node = new;
+        }
+    return node;
 }
 
 static ASTNode *parse_logical_eq_not_eq(void) {
-
+    ASTNode *node = parse_grt_geq_leq_les();
+    while (match(TOKEN_OPERATOR) &&
+        ((strcmp(current_token.lexeme,'==')==0) || (strcmp(current_token.lexeme,'!=')==0))){
+        Token operator = current_token;
+        advance();
+        ASTNode *right = parse_grt_geq_leq_les();
+        ASTNode *new = create_node(AST_BINOP);
+        new->token = operator;
+        new->left = node;
+        new->right = right;
+        node = new;
+        }
+    return node;
 }
 
 static ASTNode *parse_logical_and(void) {
-
+    ASTNode *node = parse_logical_eq_not_eq();
+    while (match(TOKEN_OPERATOR) && ((strcmp(current_token.lexeme,'&')==0))){
+        Token operator = current_token;
+        advance();
+        ASTNode *right = parse_logical_eq_not_eq();
+        ASTNode *new = create_node(AST_BINOP);
+        new->token = operator;
+        new->left = node;
+        new->right = right;
+        node = new;
+        }
+    return node;
 }
 static ASTNode *parse_logical_or(void) {
-
-}
-static ASTNode *parse_expression(void) {
-
-// OPCODE_ID=0, //used only for parse table
-// OPCODE_NOT, //NOT is left assoc
-// OPCODE_FACTORIAL, //factorials take math precedence over power, left assoc
-// OPCODE_POWER, //right assoc
-// OPCODE_MULTIPLY, OPCODE_DIVIDE, OPCODE_MOD, //all left assoc
-// OPCODE_ADD, OPCODE_SUB, //left assoc
-// OPCODE_GREATER, OPCODE_GREAT_EQ, OPCODE_LESS_EQ, OPCODE_LESSER, //left assoc, basing on C grammar
-// OPCODE_LOG_EQ, OPCODE_NOT_EQ, //left assoc, basing on C grammar
-// OPCODE_LOG_AND, //left assoc, basing on C grammar
-// OPCODE_LOG_OR, //left assoc, basing on C grammar
-
-    ASTNode *parent = create_node(AST_EXPRESSION);
-    parent->left = parse_logical_or();
-    //if, after parsing, there is an expression terminator we are okay.
-    advance();
-    if (!(match(TOKEN_COMMA) || match(TOKEN_SEMICOLON) || match(TOKEN_RIGHTBRACE) || match(TOKEN_RIGHTBRACKET) || match(TOKEN_RIGHTPARENTHESES))) {
-        printf("Syntax Error: Expression was not terminated.\n");
-        exit(1);
+    ASTNode *node = parse_logical_and();
+    while (match(TOKEN_OPERATOR) && ((strcmp(current_token.lexeme,'&')==0))){
+        Token operator = current_token;
+        advance();
+        ASTNode *right = parse_logical_and();
+        ASTNode *new = create_node(AST_BINOP);
+        new->token = operator;
+        new->left = node;
+        new->right = right;
+        node = new;
     }
-    return parent;
+    return node;
+}
+
+static ASTNode *parse_expression(void) {
+    ASTNode *node = parse_logical_or();
+    return node;
 }
 
 
