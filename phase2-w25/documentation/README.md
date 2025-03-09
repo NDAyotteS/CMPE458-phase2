@@ -62,6 +62,53 @@ Multi line:
 /*Multi line comments look  
 like this*/
 ```
+# SeaPlus+ Parser
+The SeaPlus+ Parser converts SeaPlus+ source code into an Abstract Syntax Tree(AST). It enforces syntactic rules and error handling to ensure valid program execution
+
+## Variable Declaration
+Parses int, char, and string declarations.
+```c
+int x;
+char y;
+```
+## Assignments
+Parses assignment statements. Declaration and Assignment cannot be done in the same line.
+```
+x = 5;
+y = 'c';
+```
+## Expressions
+Parses numerical, logical, and string expressions
+## Conditionals
+Parses if-else blocks
+## Loops
+Parses while, for, and repeat-until loops
+```
+while(condition){
+    //do something
+}
+for(initialization; condition; update){
+    //do something
+}
+repeat{
+    //do something
+}until(condition)
+```
+## Functions
+Parses functions, because declaration and assignment cannot be done at the same time, functions do not support default values.
+```
+func functionName(int x; int y;){
+    //do something
+}
+```
+## Print Statements 
+Parses print operations
+```
+print(x);
+```
+## Blocks
+Parses blocks
+
 ## Parser Error Generation
 | **Error Type**                      | **Error Description**                                            |
 |-------------------------------------|------------------------------------------------------------------|
