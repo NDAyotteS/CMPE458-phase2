@@ -58,6 +58,12 @@ static void advance(void) {
     current_token = get_next_token(source, &position);
 }
 
+// Hack but it works
+Token lookahead(void) {
+    int tempPos = position;
+    return get_next_token(source, &tempPos);
+}
+
 /* ---PARSER FLOW AND CONTROL FUNCTIONS--- */
 
 // Create a new AST node
@@ -269,6 +275,7 @@ static ASTNode *parse_declaration(void) {
         parse_error(PARSE_ERROR_MISSING_IDENTIFIER, current_token);
         exit(1);
     }
+
     node->token = current_token;
     advance();
 
@@ -347,7 +354,6 @@ static ASTNode *parse_statement(void) {
 
 //for things like identifiers, numbers, functions, and nested expressions
 static ASTNode *parse_non_ops(void) {
-    printf("trying non operator\n");
     ASTNode *node;
     if (match(TOKEN_NUMBER)) {
         node = create_node(AST_NUMBER);
@@ -467,7 +473,6 @@ static ASTNode *parse_grt_geq_leq_les(void) {
 }
 
 static ASTNode *parse_logical_eq_not_eq(void) {
-    printf("trying logic\n");
     ASTNode *node = parse_grt_geq_leq_les();
     while (match(TOKEN_COMPARITIVE) &&
         ((current_token.lexeme[0] == '=' || current_token.lexeme[0] == '!')
