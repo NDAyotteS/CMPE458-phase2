@@ -109,7 +109,18 @@ static ASTNode* parse_block_statement(void);
 /// Parsing functions for each keyword
 // Parses if(), if else(), and else() statements
 static ASTNode* parse_if_statement(void) {
+    ASTNode *node = create_node(AST_IF);
+    advance(); // consume print keyword
+    expect(TOKEN_LEFTPARENTHESES); // check for correct parentheses (
 
+    // TODO: IF SPECIFIC CASES
+
+    expect(TOKEN_RIGHTPARENTHESES); // check for correct parentheses )
+
+    // BLOCK STATEMENTS???
+
+    advance();
+    return node;
 }
 
 // Parses while loop statements
@@ -119,17 +130,54 @@ static ASTNode* parse_while_statement(void) {
 
 // Parses for loop statements
 static ASTNode* parse_for_statement(void) {
+    ASTNode *node = create_node(AST_FOR);
+    advance(); // consume for keyword
+    expect(TOKEN_LEFTPARENTHESES); // check for correct parentheses (
 
+    // TODO: FOR SPECIFIC CASES
+
+    expect(TOKEN_RIGHTPARENTHESES); // check for correct parentheses )
+
+    // BLOCK STATEMENTS???
+
+    advance();
+    return node;
 }
 
 // Parses until loop statements
 static ASTNode* parse_until_statement(void) {
+    ASTNode *node = create_node(AST_UNTIL);
+    advance(); // consume print keyword
+    expect(TOKEN_LEFTPARENTHESES); // check for correct parentheses (
 
+    // TODO: UNTIL SPECIFIC CASES
+
+    expect(TOKEN_RIGHTPARENTHESES); // check for correct parentheses )
+
+    // BLOCK STATEMENTS???
+
+    advance();
+    return node;
 }
 
 // Parses print statements
 static ASTNode* parse_print_statement(void) {
     ASTNode *node = create_node(AST_PRINT);
+    advance(); // consume print keyword
+    expect(TOKEN_LEFTPARENTHESES); // check for correct parentheses (
+    node->left = parse_expression();
+    expect(TOKEN_RIGHTPARENTHESES); // check for correct parentheses )
+    if (!match(TOKEN_SEMICOLON)) {
+        parse_error(PARSE_ERROR_MISSING_SEMICOLON, current_token);
+        exit(1);
+    }
+    advance();
+    return node;
+}
+
+// Parses functions (both calls and declarations)
+static ASTNode* parse_function(void) {
+    ASTNode *node = create_node(AST_FUNCTION_DECL);
     advance(); // consume print keyword
     expect(TOKEN_LEFTPARENTHESES); // check for correct parentheses (
     node->left = parse_expression();
@@ -177,46 +225,54 @@ static ASTNode *parse_declaration(void) {
         advance();
         return node;
     }
-    // TODO: ALLOW FOR DECLARATION ASSIGNMENTS???
-
     // Failed case
     parse_error(PARSE_ERROR_MISSING_SEMICOLON, current_token);
     exit(1);
-
 }
 
 // Parse assignment: e.g. x = 5; or x = 'yippee';
-static ASTNode *parse_assignment(void) {
+static ASTNode *parse_assignment_or_function(void) {
     ASTNode *node = create_node(AST_ASSIGN);
     node->left = create_node(AST_IDENTIFIER);
     node->left->token = current_token;
     advance();
 
-    if (!match(TOKEN_EQUALS)) {
-        parse_error(PARSE_ERROR_MISSING_EQUALS, current_token);
-        exit(1);
+    // TODO: RUN TESTS FOR FUNCTION CALLS
+    // Case for identifier being used to call a function
+    if (match(TOKEN_LEFTPARENTHESES)) {
+        node->right = parse_function_call();
     }
-    advance();
-
-    // For the case where the assignment is for strings, chars, or null values
-    // TODO: RUN TESTS FOR STRING DECLARATION AND NULL DECLARATIONS
-    if(match(TOKEN_STRING) || match(TOKEN_CHAR)) {
-        node->right = create_node(AST_STRINGCHAR);
-        node->right->token = current_token;
+    else {
+        // Case of identifier being assigned a value
+        if (!match(TOKEN_EQUALS)) {
+            parse_error(PARSE_ERROR_MISSING_EQUALS, current_token);
+            exit(1);
+        }
         advance();
-    } else if(match(TOKEN_NULL)) {
+
+        // For the case where the assignment is for strings, chars, or null values
+        // TODO: RUN TESTS FOR STRING DECLARATION AND NULL DECLARATIONS
+        if(match(TOKEN_STRING) || match(TOKEN_CHAR)) {
+            node->right = create_node(AST_STRINGCHAR);
+            node->right->token = current_token;
+            advance();
+        }
+        else if(match(TOKEN_NULL)) {
             node->right = create_node(AST_NULL);
             node->right->token = current_token;
             advance();
-    } else { // All other assignment types
-        node->right = parse_expression();
+        }
+        else { // All other assignment types
+            node->right = parse_expression();
+        }
     }
 
-    // Parse_expression() and string assignment both advance, check that statement ended
+    // Parse_expression(), string assignment, and function calls all advance, check that statement ended with ;
     if (!match(TOKEN_SEMICOLON)) {
         parse_error(PARSE_ERROR_MISSING_SEMICOLON, current_token);
         exit(1);
     }
+
     advance();
     return node;
 }
@@ -224,13 +280,13 @@ static ASTNode *parse_assignment(void) {
 // Parse statement
 static ASTNode *parse_statement(void) {
     if (match(TOKEN_INT) || match(TOKEN_CHAR) || match(TOKEN_STRING)) return parse_declaration();
-    if (match(TOKEN_IDENTIFIER)) return parse_assignment();
+    if (match(TOKEN_IDENTIFIER)) return parse_assignment_or_function();
     if (match(TOKEN_IF)) return parse_if_statement();
     if (match(TOKEN_WHILE)) return parse_while_statement();
     if (match(TOKEN_FOR)) return parse_for_statement();
     if (match(TOKEN_UNTIL)) return parse_until_statement();
     if (match(TOKEN_PRINT)) return parse_print_statement();
-    if (match(TOKEN_FUNC)) return parse_function_declaration();
+    if (match(TOKEN_FUNC)) return parse_function();
 
     printf("Syntax Error: Unexpected token\n");
     exit(1);
