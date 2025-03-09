@@ -63,22 +63,23 @@ Multi line:
 like this*/
 ```
 ## Parser Error Generation
-| **Error Type**                      | **Error Description** |
-|--------------------------------------|-----------------------|
-| **PARSE_ERROR_NONE**                 | No parsing error occurred. |
-| **PARSE_ERROR_UNEXPECTED_TOKEN**     | Encountered a token that doesn't fit the expected syntax. |
-| **PARSE_ERROR_UNEXPECTED_EOF**       | Reached the end of the file unexpectedly while parsing. |
-| **PARSE_ERROR_UNEXPECTED_OPERATOR**  | Operator appears in an invalid position in an expression. |
-| **PARSE_ERROR_MISSING_SEMICOLON**    | Missing semicolon (`;`) at the end of a statement. |
-| **PARSE_ERROR_MISSING_IDENTIFIER**   | Expected a variable, function name, or parameter but found none. |
-| **PARSE_ERROR_MISSING_EQUALS**       | Assignment statement is missing the equals sign (`=`). |
-| **PARSE_ERROR_INVALID_EXPRESSION**   | Encountered an invalid or incomplete expression. |
-| **PARSE_ERROR_MISSING_PAREN**        | Expected opening `(` or closing `)` but not found. |
-| **PARSE_ERROR_MISSING_CONDITION**    | `if`, `while`, or `repeat-until` statement missing a condition. |
-| **PARSE_ERROR_MISSING_BRACE**        | Expected `{` or `}` but not found in a block. |
-| **PARSE_ERROR_MISSING_COLON**        | Expected `:` in a control structure (e.g., `case` statement). |
-| **PARSE_ERROR_FUNC_CALL**            | Function call has incorrect syntax or structure. |
-| **PARSE_ERROR_MISSING_RETURN**       | Function is missing a `return` statement before it ends. |
-| **PARSE_ERROR_INVALID_FUNC_CALL**    | Function call has incorrect argument count or type mismatch. |
-| **PARSE_ERROR_BREAK_OUTSIDE_LOOP**   | `break` statement is used outside of a loop context. |
-| **PARSE_ERROR_INVALID_CONDITION**    | Condition in a control structure is missing or malformed. |
+| **Error Type**                      | **Error Description**                                            |
+|-------------------------------------|------------------------------------------------------------------|
+| **PARSE_ERROR_NONE**                | No parsing error occurred.                                       |
+| **PARSE_ERROR_UNEXPECTED_TOKEN**    | Encountered a token that doesn't fit the expected syntax.        |
+| **PARSE_ERROR_UNEXPECTED_EOF**      | Reached the end of the file unexpectedly while parsing.          |
+| **PARSE_ERROR_UNEXPECTED_OPERATOR** | Operator appears in an invalid position in an expression.        |
+| **PARSE_ERROR_MISSING_SEMICOLON**   | Missing semicolon (`;`) at the end of a statement.               |
+| **PARSE_ERROR_MISSING_IDENTIFIER**  | Expected a variable, function name, or parameter but found none. |
+| **PARSE_ERROR_MISSING_EQUALS**      | Assignment statement is missing the equals sign (`=`).           |
+| **PARSE_ERROR_INVALID_EXPRESSION**  | Encountered an invalid or incomplete expression.                 |
+| **PARSE_ERROR_MISSING_PAREN**       | Expected opening `(` or closing `)` but not found.               |
+| **PARSE_ERROR_MISSING_CONDITION**   | `if`, `while`, or `repeat-until` statement missing a condition.  |
+| **PARSE_ERROR_MISSING_BRACE**       | Expected `{` or `}` but not found in a block.                    |
+| **PARSE_ERROR_MISSING_COLON**       | Expected `:` in a control structure (e.g., `case` statement).    |
+| **PARSE_ERROR_FUNC_CALL**           | Function call has incorrect syntax or structure.                 |
+| **PARSE_ERROR_FUNC_DECLARATION**    | Function declaration has incorrect syntax or structure.          |
+| **PARSE_ERROR_MISSING_RETURN**      | Function is missing a `return` statement before it ends.         |
+| **PARSE_ERROR_INVALID_FUNC_CALL**   | Function call has incorrect argument count or type mismatch.     |
+| **PARSE_ERROR_BREAK_OUTSIDE_LOOP**  | `break` statement is used outside of a loop context.             |
+| **PARSE_ERROR_INVALID_CONDITION**   | Condition in a control structure is missing or malformed.        |

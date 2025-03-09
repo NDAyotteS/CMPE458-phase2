@@ -24,6 +24,7 @@ typedef enum {
     TOKEN_COMMA,
     TOKEN_SEMICOLON,        // e.g. ;
     TOKEN_SPECIAL_CHARACTER,// e.g. _ &
+    TOKEN_FACTORIAL,
     TOKEN_ERROR             // e.g. ERROR_INVALID_CHAR
 } TokenType;
 

@@ -31,9 +31,10 @@ typedef enum {
     AST_UNARYOP,       // Unary operators (i think just !)
     AST_COMPARISON,    // Comparisons
     AST_LOGIC_OP,      // Logical operators
-    AST_CAST,           // typecasting, not sure if were doing this
+    AST_CAST,          // typecasting, not sure if were doing this
     //Extra
-    AST_NULL,           // null values
+    AST_NULL,          // null values
+    AST_FACTORIAL      // factorial
     // TODO: Add more node types as needed
 } ASTNodeType;
 
@@ -53,6 +54,7 @@ typedef enum {
     PARSE_ERROR_FUNC_CALL,
     PARSE_ERROR_MISSING_RETURN,
     PARSE_ERROR_INVALID_FUNC_CALL,
+    PARSE_ERROR_INVALID_FUNC_DECLARATION,
     PARSE_ERROR_BREAK_OUTSIDE_LOOP,
     PARSE_ERROR_INVALID_CONDITION,
 } ParseError;

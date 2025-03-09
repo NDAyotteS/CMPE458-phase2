@@ -133,6 +133,9 @@ void print_token(Token token) {
         case TOKEN_COMPARITIVE:
             printf("COMPARATIVE SYMBOL");
             break;
+        case TOKEN_FACTORIAL:
+            printf("COMPARATIVE SYMBOL");
+        break;
         default:
             printf("UNKNOWN");
     }
@@ -585,7 +588,7 @@ Token get_next_token(const char *input, int *pos) {
                 // $ is factorial
                 token.lexeme[0] = c;
                 token.lexeme[1] = '\0';
-                token.type = TOKEN_OPERATOR;
+                token.type = TOKEN_FACTORIAL;
                 *pos += 1;
                 last_token_type = 'u'; //technically infinitely repeatable $$5 so unary
 
