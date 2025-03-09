@@ -1,14 +1,14 @@
 # SeaPlus+ README
 
 ## Keywords
-|Category|Keywords|
-|--------|----|
-|**Logic/Conditionals:**|if, else|
-|**Logic:**|while, for, until, break|
-|**IO:**|print|
-|**Data Types:**|int, char, string|
-|**Functions:**|func|
-|**Misc:**|null|
+|Category| Keywords                    |
+|--------|-----------------------------|
+|**Logic/Conditionals:**| if, else                    |
+|**Logic:**| while, repeat, until, break |
+|**IO:**| print                       |
+|**Data Types:**| int, char, string           |
+|**Functions:**| func                        |
+|**Misc:**| null                        |
 
 ## Operators
 |||                 ||                 |||

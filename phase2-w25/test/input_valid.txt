@@ -32,9 +32,11 @@ repeat {
 } until (x >= 10);
 
 // Function declaration and call
-func add(a, b) {
-    return a + b;
+func factorial_function(a) {
+    int b;
+    b = $a;
+    return b;
 }
 
-z = add(5, 10);
+z = factorial_function(5);
 print z;

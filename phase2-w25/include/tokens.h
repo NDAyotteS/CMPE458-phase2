@@ -10,10 +10,10 @@ typedef enum {
     TOKEN_OPERATOR,         // e.g. + - * / %
     TOKEN_EQUALS,           // e.g. += -= =
     TOKEN_COMPARITIVE,      // e.g. == !=
-    TOKEN_IF, TOKEN_ELSE,                                         // Conditionals
-    TOKEN_WHILE, TOKEN_FOR, TOKEN_UNTIL, TOKEN_BREAK,             // Looping
-    TOKEN_PRINT,                                                  // Output
-    TOKEN_INT, TOKEN_CHAR, TOKEN_STRING,                          // Var Types
+    TOKEN_IF, TOKEN_ELSE,                                 // Conditionals
+    TOKEN_WHILE, TOKEN_UNTIL, TOKEN_REPEAT, TOKEN_BREAK,  // Looping
+    TOKEN_PRINT,                                          // Output
+    TOKEN_INT, TOKEN_CHAR, TOKEN_STRING,                  // Var Types
     TOKEN_FUNC, TOKEN_NULL, TOKEN_RETURN,
     TOKEN_IDENTIFIER,       // Any identifiers
     TOKEN_STRING_LITERAL,   // e.g. "SeaPlus+"

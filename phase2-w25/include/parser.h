@@ -17,15 +17,14 @@ typedef enum {
     AST_IF,             //If statement
     AST_ELSE,           //Else statement
     AST_WHILE,          //while loop
-    AST_FOR,            //for loop
-    AST_UNTIL,          //repeat until loop
+    AST_REPEAT,         //repeat...
+    AST_UNTIL,          //until loop
     AST_BREAK,          //break statement
     // Function node types
     AST_FUNCTION_DECL, //function declaration
     AST_FUNCTION_CALL, //function call
     AST_RETURN,        //return statement
     AST_BLOCK,         //block {...}
-    AST_PARAM_LIST,    //function parameters
     //Expressions
     AST_BINOP,         // Binary operators
     AST_UNARYOP,       // Unary operators (i think just !)

@@ -105,24 +105,27 @@ static ASTNode *parse_statement(void);
 
 static ASTNode *parse_expression(void);
 
-static ASTNode *parse_assignment(void);
+static ASTNode *parse_assignment_or_function(void);
 
 static ASTNode* parse_block_statement(void);
 
 /// Parsing functions for each keyword
-// Parses if(), if else(), and else() statements
+// Parses if() statements
 static ASTNode* parse_if_statement(void) {
     ASTNode *node = create_node(AST_IF);
     advance(); // consume if keyword
     expect(TOKEN_LEFTPARENTHESES); // check for correct parentheses (
+    node->left = parse_expression(); // conditions in if stored in left child
+    expect(TOKEN_RIGHTPARENTHESES);  // check for correct parentheses )
+    node->right = parse_statement(); // if body
+    return node;
+}
 
-    // TODO: IF SPECIFIC CASES
-
-    expect(TOKEN_RIGHTPARENTHESES); // check for correct parentheses )
-
-    // BLOCK STATEMENTS???
-
-    advance();
+// Parses else statements
+static ASTNode* parse_else_statement(void) {
+    ASTNode *node = create_node(AST_ELSE);
+    advance(); // consume else keyword
+    node->right = parse_statement(); // else body starting from {
     return node;
 }
 
@@ -131,46 +134,32 @@ static ASTNode* parse_while_statement(void) {
     ASTNode *node = create_node(AST_WHILE);
     advance(); // consume while keyword
     expect(TOKEN_LEFTPARENTHESES); // check for correct parentheses (
-
-    // TODO: IF SPECIFIC CASES
-
+    node->left = parse_expression(); // conditions for looping within while
     expect(TOKEN_RIGHTPARENTHESES); // check for correct parentheses )
-
-    // BLOCK STATEMENTS???
-
-    advance();
-    return node;
-}
-
-// Parses for loop statements
-static ASTNode* parse_for_statement(void) {
-    ASTNode *node = create_node(AST_FOR);
-    advance(); // consume for keyword
-    expect(TOKEN_LEFTPARENTHESES); // check for correct parentheses (
-
-    // TODO: FOR SPECIFIC CASES
-
-    expect(TOKEN_RIGHTPARENTHESES); // check for correct parentheses )
-
-    // BLOCK STATEMENTS???
-
-    advance();
+    node->right = parse_statement(); // loop body
     return node;
 }
 
 // Parses until loop statements
+/* STATEMENTS HAVE THE FORM
+ *  repeat{
+ *      body code
+ *  }until();
+ */
 static ASTNode* parse_until_statement(void) {
-    ASTNode *node = create_node(AST_UNTIL);
+    ASTNode *node = create_node(AST_REPEAT);
+    advance(); // consume repeat keyword
+    node->left = parse_statement(); // repeated body
+    // following block statement, need until()
+    if (!match(TOKEN_UNTIL)) {
+        parse_error(PARSE_ERROR_UNEXPECTED_TOKEN, current_token);
+        exit(1);
+    }
     advance(); // consume until keyword
     expect(TOKEN_LEFTPARENTHESES); // check for correct parentheses (
-
-    // TODO: UNTIL SPECIFIC CASES
-
+    node->right = parse_expression(); // conditions for looping
     expect(TOKEN_RIGHTPARENTHESES); // check for correct parentheses )
-
-    // BLOCK STATEMENTS???
-
-    advance();
+    expect(TOKEN_SEMICOLON); // check semicolon after conditions
     return node;
 }
 
@@ -190,6 +179,11 @@ static ASTNode* parse_print_statement(void) {
 }
 
 // Parses function declarations
+/* STATEMENTS HAVE THE FORM
+ *  func identifier(keyword identifier, keyword identifier,...){
+ *      body code
+ *  }
+ */
 static ASTNode* parse_function_declaration(void) {
     ASTNode *node = create_node(AST_FUNCTION_DECL);
     advance(); // consume func keyword
@@ -197,6 +191,7 @@ static ASTNode* parse_function_declaration(void) {
     expect(TOKEN_LEFTPARENTHESES); // check for correct parentheses (
 
     // go through function arguments
+    // TODO: CHECK IF FUNCTION DECLARATION NEEDS TO SAVE IDENTIFIERS IN A TREE
     while (1) {
         // starts with keyword for variable type
         if (!match(TOKEN_INT) && !match(TOKEN_CHAR) && !match(TOKEN_STRING)) {
@@ -208,7 +203,8 @@ static ASTNode* parse_function_declaration(void) {
         expect(TOKEN_COMMA); // otherwise a comma to add more variable arguments
     }
     advance(); // move past the )
-    // semicolon is checked in function that called this
+    // block statement saved to right tree node
+    node->right = parse_statement();
     return node;
 }
 
@@ -221,6 +217,7 @@ static ASTNode* parse_function_call(void) {
         expect(TOKEN_IDENTIFIER); // identifier first
         if(match(TOKEN_RIGHTPARENTHESES)) break; // if the parentheses are closed the function is complete
         expect(TOKEN_COMMA); // otherwise a comma to add more variable arguments
+        // TODO: CHECK IF FUNCTION CALL NEEDS TO SAVE IDENTIFIERS IN A TREE
     }
     advance(); // move past the )
     return node;
@@ -318,14 +315,15 @@ static ASTNode *parse_statement(void) {
     if (match(TOKEN_INT) || match(TOKEN_CHAR) || match(TOKEN_STRING)) return parse_declaration();
     if (match(TOKEN_IDENTIFIER)) return parse_assignment_or_function();
     if (match(TOKEN_IF)) return parse_if_statement();
+    if (match(TOKEN_ELSE)) return parse_else_statement();
     if (match(TOKEN_WHILE)) return parse_while_statement();
-    if (match(TOKEN_FOR)) return parse_for_statement();
     if (match(TOKEN_UNTIL)) return parse_until_statement();
     if (match(TOKEN_PRINT)) return parse_print_statement();
     if (match(TOKEN_FUNC)) return parse_function_declaration();
     if (match(TOKEN_FACTORIAL)) return parse_factorial();
+    if (match(TOKEN_LEFTBRACE)) return parse_block_statement();
 
-    printf("Syntax Error: Unexpected token\n");
+    printf("Syntax Error: Unexpected token %s\n", current_token.lexeme);
     exit(1);
 }
 
@@ -537,9 +535,6 @@ void print_ast(ASTNode *node, int level) {
         case AST_BLOCK:
             printf("Block\n");
             break;
-        case AST_PARAM_LIST:
-            printf("Parameter list\n");
-            break;
         //expression cases
         case AST_BINOP:
             printf("Binary operator: %s\n", node->token.lexeme);
@@ -558,6 +553,9 @@ void print_ast(ASTNode *node, int level) {
             break;
         case AST_NULL:
             printf("Null\n");
+            break;
+        case AST_FACTORIAL:
+            printf("Factorial %s\n", node->token.lexeme);
             break;
 
         // TODO 6: Add cases for new node types

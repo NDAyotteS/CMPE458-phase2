@@ -18,7 +18,7 @@ static struct {
     {"if", TOKEN_IF},
     {"else", TOKEN_ELSE},
     {"while", TOKEN_WHILE},
-    {"for", TOKEN_FOR},
+    {"repeat", TOKEN_REPEAT},
     {"until", TOKEN_UNTIL},
     {"break", TOKEN_BREAK},
     {"print", TOKEN_PRINT},
@@ -91,8 +91,8 @@ void print_token(Token token) {
         case TOKEN_IF:
         case TOKEN_ELSE:
         case TOKEN_WHILE:
-        case TOKEN_FOR:
         case TOKEN_UNTIL:
+        case TOKEN_REPEAT:
         case TOKEN_BREAK:
         case TOKEN_PRINT:
         case TOKEN_INT:
