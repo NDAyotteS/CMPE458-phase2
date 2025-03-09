@@ -376,8 +376,8 @@ static ASTNode *parse_non_ops(void) {
         node = create_node(AST_NUMBER);
         advance();
         return node;
-    } else if (match(TOKEN_STRING_LITERAL)) {
-        node = create_node(AST_NUMBER);
+    } else if (match(TOKEN_STRING_LITERAL) || match(TOKEN_CHAR_LITERAL)) {
+        node = create_node(AST_STRINGCHAR);
         advance();
         return node;
     } else if (match(TOKEN_FUNC)) {
@@ -389,7 +389,7 @@ static ASTNode *parse_non_ops(void) {
         expect(TOKEN_RIGHTPARENTHESES);//make sure it closes
         return node;
     } else {
-        printf("Expected an identifier, number, function, or parentheses sub-expression");
+        printf("Expected an identifier, number, function, or parentheses sub-expression\n");
         printf("Token: %s\n", current_token.lexeme);
         exit(1);
     }
