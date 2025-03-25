@@ -11,9 +11,10 @@ c = 'A';
 z = x + 10 * 3;
 
 
-# Print statement
+# Print statement function call
 print(x);
-print(y);
+print("A String Literal");
+print('A');
 
 # Control flow
 if (x > 20) {
@@ -32,12 +33,6 @@ repeat {
     x = x + 1;
 } until (x == 10);
 
-# Function declaration and call
-func fake_factorial_function(int a) {
-    int b;
-    b = $(a);
-    return b;
-}
-
-z = fake_factorial_function(5);
-print z;
+# Factorial function call
+z = $(5);
+z = $(1+2+3);

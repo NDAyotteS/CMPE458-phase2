@@ -27,9 +27,3 @@ while(){
 repeat {
     x = x + 1;
 } until ();
-
-# Function declaration and call with errors
-func factorial_function(a);
-
-z = factorial_function();
-print z;

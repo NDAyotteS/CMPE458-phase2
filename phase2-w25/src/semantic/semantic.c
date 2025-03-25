@@ -7,4 +7,4 @@
 #include "../../include/parser.h"
 #include "../../include/lexer.h"
 #include "../../include/tokens.h"
-#include "../../include/smeantic.h"
+#include "../../include/semantic.h"

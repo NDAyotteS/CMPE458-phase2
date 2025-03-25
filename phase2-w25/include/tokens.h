@@ -14,7 +14,7 @@ typedef enum {
     TOKEN_WHILE, TOKEN_UNTIL, TOKEN_REPEAT, TOKEN_BREAK,  // Looping
     TOKEN_PRINT,                                          // Output
     TOKEN_INT, TOKEN_CHAR, TOKEN_STRING,                  // Var Types
-    TOKEN_FUNC, TOKEN_NULL, TOKEN_RETURN,
+    TOKEN_NULL,             // Null Data type
     TOKEN_IDENTIFIER,       // Any identifiers
     TOKEN_STRING_LITERAL,   // e.g. "SeaPlus+"
     TOKEN_CHAR_LITERAL,     // e.g. 'c'
@@ -24,7 +24,7 @@ typedef enum {
     TOKEN_COMMA,
     TOKEN_SEMICOLON,        // e.g. ;
     TOKEN_SPECIAL_CHARACTER,// e.g. _ &
-    TOKEN_FACTORIAL,
+    TOKEN_FACTORIAL,        // e.g. $
     TOKEN_ERROR             // e.g. ERROR_INVALID_CHAR
 } TokenType;
 

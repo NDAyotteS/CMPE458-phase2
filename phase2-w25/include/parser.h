@@ -20,10 +20,7 @@ typedef enum {
     AST_REPEAT,         //repeat...
     AST_UNTIL,          //until loop
     AST_BREAK,          //break statement
-    // Function node types
-    AST_FUNCTION_DECL, //function declaration
-    AST_FUNCTION_CALL, //function call
-    AST_RETURN,        //return statement
+    // Block statements for loops
     AST_BLOCK,         //block {...}
     //Expressions
     AST_EXPRESSION,    // Unresolved state for AST nodes in expression parser
@@ -52,9 +49,6 @@ typedef enum {
     PARSE_ERROR_MISSING_BRACE,
     PARSE_ERROR_MISSING_COLON,
     PARSE_ERROR_FUNC_CALL,
-    PARSE_ERROR_MISSING_RETURN,
-    PARSE_ERROR_INVALID_FUNC_CALL,
-    PARSE_ERROR_INVALID_FUNC_DECLARATION,
     PARSE_ERROR_BREAK_OUTSIDE_LOOP,
     PARSE_ERROR_INVALID_CONDITION,
 } ParseError;

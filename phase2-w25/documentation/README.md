@@ -7,7 +7,6 @@
 |**Logic:**| while, repeat, until, break  |
 |**IO:**| print                        |
 |**Data Types:**| int, char, string            |
-|**Functions:**| func                         |
 |**Misc:**| null, $ (factorial function) |
 
 ## Operators
@@ -171,38 +170,31 @@ repeat{
     # do something
 }until() # until must have an expression within ()
 ```
-## Functions
-Parses functions, because declaration and assignment cannot be done at the same time, 
-functions do not support default values.
 
-Forward function declaration does not exist (see invalid case 2).
-```
-# valid cases
-func functionName(int x, int y){
-    # do something
-}
-
-func functionName(){
-    # do something
-}
-
-
-# invalid cases
-func functionName(int x,){ # improper expression format
-    # do something
-}
-
-func functionName(int x); # forward function declarations not supported
-
-func functionName(int x = 0){ # cannot assign default values
-    # do something
-}
-```
 ## Print Statements 
 Parses print operations. Can accept any expression or value. Has no restrictions on what the expression is.
 ```
 print(expression);
 ```
+
+## Factorial Statements
+Parses factorial operations. Can accept any expression or value. Has no restrictions on what the expression is. 
+
+The function can be used inside an expression, it had the highest level of precedence (like a bracketed expression would)
+```
+// valid cases
+x = $(expression);
+
+x = 5 + $(expression) + 10;
+
+// invalid cases
+x = $expression; // lacks brackets
+
+$(expression); // on its own invalid
+
+x = 5 + $(expression); + 10; // Semi-colon only necessary when used as the whole expression
+```
+
 ## Block Parsing
 For any keyword that functions using repeating/callable code (functions, loops, if and else statments), 
 the block parser is responsible for creating and organizing the AST nodes of the given code.

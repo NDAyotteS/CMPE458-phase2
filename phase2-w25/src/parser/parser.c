@@ -32,9 +32,6 @@ static void parse_error(ParseError error, Token token) {
         case PARSE_ERROR_INVALID_EXPRESSION:
             printf("Invalid expression after '%s' at position '%d'\n", token.lexeme, position);
             break;
-        case PARSE_ERROR_MISSING_PAREN:
-            printf("Missing parentheses after '%s' at position '%d'\n", token.lexeme, position);
-            break;
         case PARSE_ERROR_MISSING_CONDITION:
             printf("Missing condition after '%s' at position '%d'\n", token.lexeme, position);
             break;
@@ -43,9 +40,6 @@ static void parse_error(ParseError error, Token token) {
             break;
         case PARSE_ERROR_FUNC_CALL:
             printf("Function call '%s' at position '%d'\n", token.lexeme, position);
-            break;
-        case PARSE_ERROR_INVALID_FUNC_DECLARATION:
-            printf("Function declaration syntax error '%s' at position '%d'\n", token.lexeme, position);
             break;
         default:
             printf("Unknown error\n");
@@ -90,6 +84,7 @@ static void expect(TokenType type) {
 
 // Forward declarations for functions
 static ASTNode *parse_statement(void);
+static ASTNode *parse_declaration(void);
 static ASTNode *parse_expression(void);
 static ASTNode *parse_assignment_or_function(void);
 static ASTNode *parse_block_statement(void);
@@ -130,7 +125,7 @@ static ASTNode* parse_while_statement(void) {
 /* STATEMENTS HAVE THE FORM
  *  repeat{
  *      body code
- *  }until();
+ *  } until();
  */
 static ASTNode* parse_until_statement(void) {
     ASTNode *node = create_node(AST_REPEAT);
@@ -150,10 +145,14 @@ static ASTNode* parse_until_statement(void) {
 }
 
 // Parses print statements
+/* STATEMENTS HAVE THE FORM
+ *  print(expression);
+ */
 static ASTNode* parse_print_statement(void) {
     ASTNode *node = create_node(AST_PRINT);
     advance(); // consume print keyword
     expect(TOKEN_LEFTPARENTHESES); // check for correct parentheses (
+    // TODO: REWORK THE PRINT TO ACTUALLY ACCEPT ANYTHING
     node->left = parse_expression();
     expect(TOKEN_RIGHTPARENTHESES); // check for correct parentheses )
     if (!match(TOKEN_SEMICOLON)) {
@@ -164,61 +163,11 @@ static ASTNode* parse_print_statement(void) {
     return node;
 }
 
-// Parses function declarations
-/* STATEMENTS HAVE THE FORM
- *  func identifier(keyword identifier, keyword identifier,...){
- *      body code
- *  }
- */
-static ASTNode* parse_function_declaration(void) {
-    ASTNode *node = create_node(AST_FUNCTION_DECL);
-    advance(); // consume func keyword
-    expect(TOKEN_IDENTIFIER); // check for valid Identifier function name
-    expect(TOKEN_LEFTPARENTHESES); // check for correct parentheses (
-    // if not immediately followed by parentheses, go through arguments
-    if(!match(TOKEN_RIGHTPARENTHESES)) {
-        // go through function arguments (NOT CURRENTLY SAVED IN A TREE)
-        while (1) {
-            // starts with keyword for variable type
-            if (!match(TOKEN_INT) && !match(TOKEN_CHAR) && !match(TOKEN_STRING)) {
-                parse_error(PARSE_ERROR_INVALID_FUNC_DECLARATION, current_token);
-                exit(1);
-            }
-            advance();
-            expect(TOKEN_IDENTIFIER); // followed by identifier
-            if(match(TOKEN_RIGHTPARENTHESES)) break; // if the parentheses are closed the function is complete
-            expect(TOKEN_COMMA); // otherwise a comma to add more variable arguments
-        }
-    }
-
-    advance(); // move past the )
-    node->right = parse_statement(); // block statement saved to right node (handled by parse_statement)
-    return node;
-}
-
-// Parses function call
-/* STATEMENTS HAVE THE FORM
- *  func identifier(keyword identifier, keyword identifier,...){
- *      body code
- *  }
- */
-static ASTNode* parse_function_call(void) {
-    ASTNode *node = create_node(AST_FUNCTION_CALL);
-    advance(); // consumes the ( to start the function call
-    // go through function arguments
-    while (1) {
-        expect(TOKEN_IDENTIFIER); // identifier first
-        if(match(TOKEN_RIGHTPARENTHESES)) break; // if the parentheses are closed the function is complete
-        expect(TOKEN_COMMA); // otherwise a comma to add more variable arguments
-    }
-    advance(); // move past the )
-    // the parse assignment_or_function handles the semicolon
-    return node;
-}
-
 // Parses the factorial as though it was a function
 /* STATEMENTS HAVE THE FORM
- *  $(expression)
+ *  $(expression);
+ *  or
+ *  x = $(expression);
  */
 static ASTNode *parse_factorial(void){
     ASTNode *node = create_node(AST_FACTORIAL);
@@ -226,8 +175,6 @@ static ASTNode *parse_factorial(void){
     expect(TOKEN_LEFTPARENTHESES); // check for correct parentheses (
     node->left = parse_expression(); // parse expression should handle the arguments for the function
     expect(TOKEN_RIGHTPARENTHESES); // check for correct parentheses )
-    // Need semicolon checking???
-    advance();
     return node;
 }
 
@@ -283,41 +230,38 @@ static ASTNode *parse_declaration(void) {
     exit(1);
 }
 
-// Parse assignment or function call: e.g. x = 5; or x = 'yippee'; or add(x, y);
+// Parse assignment or function call: e.g. x = 5; or x = 'yippee'; or x = $(5);
 static ASTNode *parse_assignment_or_function(void) {
     ASTNode *node = create_node(AST_ASSIGN);
     node->left = create_node(AST_IDENTIFIER);
     node->left->token = current_token;
     advance();
 
-    // Case for identifier being used to call a function
-    if (match(TOKEN_LEFTPARENTHESES)) {
-        node->type = AST_FUNCTION_CALL; // overwrite assign node type
-        node->right = parse_function_call();
+    // Check equals
+    if (!match(TOKEN_EQUALS)) {
+        parse_error(PARSE_ERROR_MISSING_EQUALS, current_token);
+        exit(1);
     }
-    else {
-        // Case of identifier being assigned a value
-        if (!match(TOKEN_EQUALS)) {
-            parse_error(PARSE_ERROR_MISSING_EQUALS, current_token);
-            exit(1);
-        }
-        advance();
+    advance();
 
-        // For the case where the assignment is for strings, chars, or null values
-        if(match(TOKEN_STRING) || match(TOKEN_CHAR)) {
-            node->right = create_node(AST_STRINGCHAR);
-            node->right->token = current_token;
-            advance();
-        }
-        else if(match(TOKEN_NULL)) {
-            node->right = create_node(AST_NULL);
-            node->right->token = current_token;
-            advance();
-        }
-        else { // All other assignment types
-            node->right = parse_expression();
-        }
+    // For the case where the assignment is for strings, chars, or null values
+    if(match(TOKEN_STRING) || match(TOKEN_CHAR)) {
+        node->right = create_node(AST_STRINGCHAR);
+        node->right->token = current_token;
+        advance();
     }
+    else if(match(TOKEN_NULL)) { // Null assignment
+        node->right = create_node(AST_NULL);
+        node->right->token = current_token;
+        advance();
+    }
+    else if(match(TOKEN_FACTORIAL)) { // factorial operation
+        node->right = parse_factorial();
+    }
+    else { // All other assignment types
+        node->right = parse_expression();
+    }
+
 
     // Parse_expression(), string assignment, and function calls all advance, check that statement ended with ;
     if (!match(TOKEN_SEMICOLON)) {
@@ -338,8 +282,6 @@ static ASTNode *parse_statement(void) {
     if (match(TOKEN_WHILE)) return parse_while_statement();
     if (match(TOKEN_REPEAT)) return parse_until_statement();
     if (match(TOKEN_PRINT)) return parse_print_statement();
-    if (match(TOKEN_FUNC)) return parse_function_declaration();
-    if (match(TOKEN_FACTORIAL)) return parse_factorial();
     if (match(TOKEN_LEFTBRACE)) return parse_block_statement();
 
     printf("Syntax Error: Unexpected token %s at position %d line %d\n", current_token.lexeme, position, current_token.line);
@@ -355,17 +297,12 @@ static ASTNode *parse_non_ops(void) {
         return node;
     }
     if (match(TOKEN_IDENTIFIER)) {
-        int holdPos = position;
-        Token next_token = get_next_token(source, &position);
-        position = holdPos; // Restore position
-        if (next_token.type == TOKEN_LEFTPARENTHESES) { // function call case
-            return parse_function_call();
-        }
-        if (next_token.type == TOKEN_FACTORIAL) { // factorial case
-            return parse_factorial();
-        }
-        // all other cases
         node = create_node(AST_IDENTIFIER);
+        advance();
+        return node;
+    }
+    if (match(TOKEN_FACTORIAL)) { // factorial case
+        node = parse_factorial();
         advance();
         return node;
     }
@@ -490,6 +427,7 @@ static ASTNode *parse_logical_and(void) {
         }
     return node;
 }
+
 static ASTNode *parse_logical_or(void) {
     ASTNode *node = parse_logical_and();
     while (strcmp(current_token.lexeme, "||")==0){
@@ -510,8 +448,6 @@ static ASTNode *parse_expression(void) {
     return node;
 }
 
-
-
 /* ---PARSER INITIALIZATION AND OUTPUT FUNCTIONS--- */
 
 // Parse program (multiple statements)
@@ -521,14 +457,13 @@ static ASTNode *parse_program(void) {
     ASTNode *current = program;
 
     while (!match(TOKEN_EOF)) {
-      current->left = parse_statement();
+        current->left = parse_statement();
         // parse_statement() contains advance() calls, hence re-check
         if (!match(TOKEN_EOF)) {
             current->right = create_node(AST_PROGRAM);
             current = current->right;
         }
     }
-
     return program;
 }
 
@@ -584,21 +519,11 @@ void print_ast(ASTNode *node, int level) {
         case AST_WHILE:
             printf("While statement\n");
             break;
-        case AST_UNTIL:
+        case AST_REPEAT:
             printf("Repeat-Until statement\n");
             break;
         case AST_BREAK:
             printf("Break statement\n");
-            break;
-        //function node types
-        case AST_FUNCTION_DECL:
-            printf("Function declaration: %s\n", node->token.lexeme);
-            break;
-        case AST_FUNCTION_CALL:
-            printf("Function call: %s\n", node->token.lexeme);
-            break;
-        case AST_RETURN:
-            printf("Return statement\n");
             break;
         case AST_BLOCK:
             printf("Block\n");
@@ -642,63 +567,98 @@ void free_ast(ASTNode *node) {
     free(node);
 }
 
-// For reading input files
-char *read_file(const char *filename) {
-    FILE *file = fopen(filename, "r");
-    if (!file) {
-        perror("Error opening file");
-        return NULL;
+// Main function for testing
+int main() {
+    // get file
+    FILE *file = fopen("../phase2-w25/test/input_valid.txt", "r");
+    if (file == NULL) {
+        printf("Error opening file\n");
+        return 1;
     }
 
-    // Seek to the end to get the file size
+    // get file size
     fseek(file, 0, SEEK_END);
     long file_size = ftell(file);
     rewind(file);
 
-    // Allocate memory and read the file contents
-    char *buffer = (char *)malloc(file_size + 1);
+    // get buffer size based on file size for chars
+    char *buffer = malloc(file_size + 1);
     if (!buffer) {
-        perror("Memory allocation failed");
+        printf("Memory allocation failed.\n");
         fclose(file);
-        return NULL;
+        return 1;
     }
 
-    fread(buffer, 1, file_size, file);
-    buffer[file_size] = '\0';  // Null-terminate the string
+    // fill buffer with full file of chars in order
+    size_t bytes_read = fread(buffer, 1, file_size, file);
+    buffer[bytes_read] = '\0';
+    size_t b = 0;
+    for (size_t i = 0; i < bytes_read; i++) {
+        if (buffer[i] != '\r') {
+            buffer[b++] = buffer[i];
+        }
+    }
+    buffer[b] = '\0';
 
-    fclose(file);
-    return buffer;
-}
+    // start at beginning of buffer
+    position = 0;
 
-// Main function for testing
-int main() {
+    // Start Parsing
+    printf(buffer);
+    parser_init(buffer);
     ASTNode *ast = parse();
 
-    printf("\nAbstract Syntax Tree:\n");
+    // Print Parsed Tree
     print_ast(ast, 0);
 
-    // Read from test files
-    const char *filenames[] = {"../phase2-w25/test/input_valid.txt", "../phase2-w25/test/input_invalid.txt"};
+    // free memory and close file
+    free(buffer);
+    fclose(file);
 
-    for (int i = 0; i < 2; i++) {
-        printf("Parsing file: %s\n", filenames[i]);
+    // Repeat for Incorrect file
+    position = 0;
 
-        char *file_input = read_file(filenames[i]);
-        if (!file_input) {
-            printf("Skipping file due to read error.\n");
-            continue;
-        }
-
-        parser_init(file_input);
-        ast = parse();
-
-        printf("\nAbstract Syntax Tree:\n");
-        print_ast(ast, 0);
-        free_ast(ast);
-
-        free(file_input);
-        printf("\n-----------------------------\n");
+    // get file
+    file = fopen("../phase2-w25/test/input_invalid.txt", "r");
+    if (file == NULL) {
+        printf("Error opening file\n");
+        return 1;
     }
-    free_ast(ast);
+
+    // get file size
+    fseek(file, 0, SEEK_END);
+    file_size = ftell(file);
+    rewind(file);
+
+    // get buffer size based on file size for chars
+    buffer = malloc(file_size + 1);
+    if (!buffer) {
+        printf("Memory allocation failed.\n");
+        fclose(file);
+        return 1;
+    }
+
+    // fill buffer with full file of chars in order
+    bytes_read = fread(buffer, 1, file_size, file);
+    buffer[bytes_read] = '\0';
+    b = 0;
+    for (size_t i = 0; i < bytes_read; i++) {
+        if (buffer[i] != '\r') {
+            buffer[b++] = buffer[i];
+        }
+    }
+    buffer[b] = '\0';
+
+    // Start Parsing
+    printf(buffer);
+    parser_init(buffer);
+    ast = parse();
+
+    // Print Parsed Tree
+    print_ast(ast, 0);
+
+    // free memory "he ain't deserve to be locked up"
+    free(buffer);
+    fclose(file);
     return 0;
 }

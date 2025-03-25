@@ -1,7 +1,6 @@
 
 /* lexer.c */
 #include <stdio.h>
-#include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
 #include "../../include/tokens.h"
@@ -25,8 +24,6 @@ static struct {
     {"int", TOKEN_INT},
     {"char", TOKEN_CHAR},
     {"string", TOKEN_STRING},
-    {"func", TOKEN_FUNC},
-    {"return", TOKEN_RETURN},
     {"null", TOKEN_NULL},
 };
 
@@ -98,8 +95,6 @@ void print_token(Token token) {
         case TOKEN_INT:
         case TOKEN_CHAR:
         case TOKEN_STRING:
-        case TOKEN_FUNC:
-        case TOKEN_RETURN:
         case TOKEN_NULL:
             printf("KEYWORD");
             break;
@@ -581,6 +576,7 @@ Token get_next_token(const char *input, int *pos) {
                 token.type = TOKEN_FACTORIAL;
                 *pos += 1;
                 last_token_type = 'u'; //technically infinitely repeatable $$5 so unary
+                break;
 
             // If it somehow caught the operator but couldn't identify it, this catches it
             default:
