@@ -649,6 +649,9 @@ int main() {
     }
     buffer[b] = '\0';
 
+    // Repeat for Incorrect file
+    position = 0;
+
     // Start Parsing
     printf(buffer);
     parser_init(buffer);
