@@ -13,7 +13,6 @@ static const char *source;
 static const int OPERATOR_TOKEN_MAX = 128; //arbitrary
 
 /* ---PARSER ERROR OUTPUTS FUNCTIONS--- */
-
 static void parse_error(ParseError error, Token token) {
     printf("Parse Error at line %d: ", token.line);
     switch (error) {
@@ -52,7 +51,6 @@ static void advance(void) {
 }
 
 /* ---PARSER FLOW AND CONTROL FUNCTIONS--- */
-
 // Create a new AST node
 static ASTNode *create_node(ASTNodeType type) {
     ASTNode *node = malloc(sizeof(ASTNode));
@@ -90,7 +88,6 @@ static ASTNode *parse_assignment_or_function(void);
 static ASTNode *parse_block_statement(void);
 
 /* ---PARSING FUNCTIONS FOR KEYWORDS AND PRE-MADE FUNCTIONS--- */
-
 // Parses if() statements
 static ASTNode* parse_if_statement(void) {
     ASTNode *node = create_node(AST_IF);
@@ -130,7 +127,7 @@ static ASTNode* parse_while_statement(void) {
 static ASTNode* parse_until_statement(void) {
     ASTNode *node = create_node(AST_REPEAT);
     advance(); // consume repeat keyword
-    node->left = parse_statement(); // repeated body (handled by parse_statement)
+    node->right = parse_statement(); // repeated body (handled by parse_statement)
     // following block statement, need until()
     if (!match(TOKEN_UNTIL)) { // case without until
         parse_error(PARSE_ERROR_UNEXPECTED_TOKEN, current_token);
@@ -138,7 +135,7 @@ static ASTNode* parse_until_statement(void) {
     }
     advance(); // consume until keyword
     expect(TOKEN_LEFTPARENTHESES); // check for correct parentheses (
-    node->right = parse_expression(); // conditions for looping (handled by parse_expression)
+    node->left = parse_expression(); // conditions for looping (handled by parse_expression)
     expect(TOKEN_RIGHTPARENTHESES); // check for correct parentheses )
     expect(TOKEN_SEMICOLON); // check semicolon after conditions
     return node;
@@ -152,7 +149,6 @@ static ASTNode* parse_print_statement(void) {
     ASTNode *node = create_node(AST_PRINT);
     advance(); // consume print keyword
     expect(TOKEN_LEFTPARENTHESES); // check for correct parentheses (
-    // TODO: REWORK THE PRINT TO ACTUALLY ACCEPT ANYTHING
     node->left = parse_expression();
     expect(TOKEN_RIGHTPARENTHESES); // check for correct parentheses )
     if (!match(TOKEN_SEMICOLON)) {
@@ -204,9 +200,7 @@ static ASTNode* parse_block_statement(void) {
     return node;
 }
 
-
 /* ---PARSING FUNCTIONS FOR BASIC DECLARATIONS AND ASSIGNMENTS--- */
-
 // Parse variable declaration: e.g. int x;
 static ASTNode *parse_declaration(void) {
     ASTNode *node = create_node(AST_VARDECL);

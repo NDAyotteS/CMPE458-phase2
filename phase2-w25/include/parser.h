@@ -61,7 +61,6 @@ typedef struct ASTNode {
     Token token;               // Token associated with this node
     struct ASTNode* left;      // Left child
     struct ASTNode* right;     // Right child
-    // TODO: Add more fields if needed
 } ASTNode;
 
 // Parser functions

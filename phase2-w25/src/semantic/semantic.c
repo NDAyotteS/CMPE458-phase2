@@ -1,5 +1,4 @@
 /* semantic.c */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,8 +7,6 @@
 #include "../../include/lexer.h"
 #include "../../include/tokens.h"
 #include "../../include/semantic.h"
-
-// TODO: Step 2: Implement Symbol Table Operations! This is very important
 
 /* --- SYMBOL TABLE OPERATIONS --- */
 // Initialize a new symbol table
@@ -54,43 +51,40 @@ Symbol* lookup_symbol(SymbolTable* table, const char* name) {
 }
 
 // Look up a symbol in the table by name across current accessible scopes
+// Returns the symbol if found, NULL otherwise
 Symbol* lookup_symbol_current_scope(SymbolTable* table, const char* name) {
     Symbol* current = table->head;
     while (current) {
-        if (strcmp(current->name, name) == 0 &&
-            current->scope_level == table->current_scope) {
+        if (strcmp(current->name, name) == 0 && current->scope_level == table->current_scope) {
             return current;
-            }
+        }
         current = current->next;
     }
     return NULL;
 }
 
-// Enter a new scope level
 // Increments the current scope level when entering a block (e.g., if, while)
 void enter_scope(SymbolTable* table) {
     table->current_scope++;
 }
 
-// Exit the current scope
 // Decrements the current scope level when leaving a block
-// Optionally removes symbols that are no longer in scope
 void exit_scope(SymbolTable* table) {
-    // MAYBE delete all symbols in scope level above
-    // remove_symbols_in_current_scope(table);
+    remove_symbols_in_current_scope(table);
     table->current_scope--;
 }
 
-// Remove symbols from the current scope
+// Remove symbols belonging to scope being exited
 // Cleans up symbols that are no longer accessible after leaving a scope
 void remove_symbols_in_current_scope(SymbolTable* table) {
-    // MIGHT NOT DO THIS ONE
+    // TODO: delete all symbols in scope level above
 }
 
 // Free the symbol table memory
 // Releases all allocated memory when the symbol table is no longer needed
 void free_symbol_table(SymbolTable* table) {
-
+    // Am I stupid or is this it
+    free(table);
 }
 
 /* --- SEMANTIC ANALYSIS FUNCTIONS --- */
@@ -121,9 +115,15 @@ int check_program(ASTNode* node, SymbolTable* table) {
     return result;
 }
 
-// Check statements
+// Check statements of all types, calls functions
 int check_statement(ASTNode* node, SymbolTable* table) {
-
+    if (node->type == AST_VARDECL) return check_declaration(node, table);
+    if (node->type == AST_ASSIGN) return check_assignment(node, table);
+    if (node->type == AST_EXPRESSION) return check_expression(node, table);
+    if (node->type == AST_BLOCK) return check_block(node, table);
+    if (node->type == AST_IF || node->type == AST_WHILE || node->type == AST_UNTIL) return check_condition(node, table);
+    if (node->type == AST_ELSE) return check_block(node, table);
+    return 0;
 }
 
 // Check a variable declaration
@@ -131,7 +131,6 @@ int check_declaration(ASTNode* node, SymbolTable* table) {
     if (node->type != AST_VARDECL) {
         return 0;
     }
-
     const char* name = node->token.lexeme;
 
     // Check if variable already declared in current scope
@@ -142,7 +141,7 @@ int check_declaration(ASTNode* node, SymbolTable* table) {
     }
 
     // Add to symbol table
-    add_symbol(table, name, TOKEN_INT, node->token.line);
+    add_symbol(table, name, node->token.type, node->token.line);
     return 1;
 }
 
@@ -167,23 +166,33 @@ int check_assignment(ASTNode* node, SymbolTable* table) {
     if (expr_valid) {
         symbol->is_initialized = 1;
     }
-
     return expr_valid;
 }
 
 // Check an expression for type correctness
 int check_expression(ASTNode* node, SymbolTable* table) {
 
+    // HANDLE BLOCK STUFF
+
+    return 1;
 }
 
 // Check a block of statements, handling scope
 int check_block(ASTNode* node, SymbolTable* table) {
+    enter_scope(table);
 
+    // HANDLE BLOCK STUFF
+
+    exit_scope(table);
+    return 1;
 }
 
 // Check a condition (e.g., in if statements)
 int check_condition(ASTNode* node, SymbolTable* table) {
 
+    // HANDLE CONDITIONS SHOULD BE SIMILAR TO CHECK EXPRESSION
+
+    return 1;
 }
 
 /* --- ERROR REPORTING --- */
