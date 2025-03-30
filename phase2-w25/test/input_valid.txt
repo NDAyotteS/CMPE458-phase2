@@ -1,38 +1,40 @@
 # declares
-int x;
-string y;
+int a;
+string b;
 char c;
-int z;
 
 # Assignments
-x = 42;
-y = "Hello, Parser!";
+a = 42;
+b = "Hello, Parser!";
 c = 'A';
-z = x + 10 * 3;
+a = x + 10 * 3;
 
 
 # Print statement function call
-print(x);
+print(a);
 print("A String Literal");
 print('A');
 
 # Control flow
-if (x > 20) {
-    print("X is large!");
+if (a > 20) {
+    print("large!");
 } else {
-    print("X is small!");
+    print("small!");
 }
 
 # While loop
-while (x > 0) {
-    x = x - 1;
+while (a > 0) {
+    a = a - 1;
 }
 
 # Repeat-Until loop
 repeat {
-    x = x + 1;
-} until (x == 10);
+    int d;
+    d = a + 1;
+    a = a + d;
+} until (a >= 10);
 
 # Factorial function call
+int z;
 z = $(5);
 z = $(1+2+3);

@@ -1,0 +1,28 @@
+# Undefined variable
+a = 7;
+
+# Redefined variable
+int b;
+b = 7;
+string b;
+
+# Type Mismatch
+int c;
+c = 'c';
+
+# Invalid Operation
+int d;
+d = 5 + "hello";
+
+# Outside Scope
+int e;
+e = 5;
+if(e == 5){
+    int f;
+    f = 7;
+}
+f = 5;
+
+# Uninitialized Var
+int g;
+print(g);

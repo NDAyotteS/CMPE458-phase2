@@ -567,6 +567,7 @@ void free_ast(ASTNode *node) {
     free(node);
 }
 
+/* KEEPING OLD MAIN FOR REFERENCING */
 // Main function for testing
 int main() {
     // get file
@@ -661,6 +662,7 @@ int main() {
     print_ast(ast, 0);
 
     // free memory "he ain't deserve to be locked up"
+    free(ast);
     free(buffer);
     fclose(file);
     return 0;
