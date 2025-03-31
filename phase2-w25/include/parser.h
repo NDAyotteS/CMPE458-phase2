@@ -7,11 +7,11 @@
 // Basic node types for AST
 typedef enum {
     AST_PROGRAM,        // Program node
-    AST_VARDECL,        // Variable declaration (int x)
     AST_ASSIGN,         // Assignment (x = 5)
     AST_PRINT,          // Print statement
     AST_NUMBER,         // Number literal
     AST_IDENTIFIER,     // Variable name
+    AST_INT,            // Integers
     AST_STRINGCHAR,     // String or Character
     // Control Flow node types
     AST_IF,             //If statement

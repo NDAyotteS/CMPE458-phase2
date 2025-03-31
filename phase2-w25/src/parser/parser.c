@@ -177,17 +177,15 @@ static ASTNode *parse_factorial(void){
 // Parses block statements (the { ... } inside of a function, if statement, loop, etc)
 static ASTNode* parse_block_statement(void) {
     ASTNode *node = create_node(AST_BLOCK);
-    ASTNode *current = NULL; // track the current node as to build the full block statement tree
+    ASTNode *current = node; // track the current node as to build the full block statement tree
     advance(); // consume { symbol
     // will continue to build the tree of the block
     while (!match(TOKEN_RIGHTBRACE) && !match(TOKEN_EOF)) {
         ASTNode *next_statement = parse_statement();
         //builds to the left on with first statement
-        if (node->left == NULL) {
-            node->left = next_statement;
-            current = node->left;
-        } else { // then builds on right side perpetually
-            current->right = next_statement;
+        current->left = next_statement;
+        if(!match(TOKEN_RIGHTBRACE)) {
+            current->right = create_node(AST_PROGRAM);
             current = current->right;
         }
     }
@@ -203,7 +201,13 @@ static ASTNode* parse_block_statement(void) {
 /* ---PARSING FUNCTIONS FOR BASIC DECLARATIONS AND ASSIGNMENTS--- */
 // Parse variable declaration: e.g. int x;
 static ASTNode *parse_declaration(void) {
-    ASTNode *node = create_node(AST_VARDECL);
+    ASTNode *node;
+    if (match(TOKEN_INT)){
+        node = create_node(AST_INT);
+    }
+    if(match(TOKEN_CHAR) || match(TOKEN_STRING)) {
+        node = create_node(AST_STRINGCHAR);
+    }
     advance(); // consume data-type
 
     if (!match(TOKEN_IDENTIFIER)) {
@@ -485,11 +489,8 @@ void print_ast(ASTNode *node, int level) {
         case AST_PROGRAM:
             printf("Program\n");
             break;
-        case AST_VARDECL:
-            printf("VarDecl: %s\n", node->token.lexeme);
-            break;
         case AST_ASSIGN:
-            printf("Assign\n");
+            printf("Assign Int\n");
             break;
         case AST_PRINT:
             printf("Print\n");
@@ -499,6 +500,9 @@ void print_ast(ASTNode *node, int level) {
             break;
         case AST_IDENTIFIER:
             printf("Identifier: %s\n", node->token.lexeme);
+            break;
+        case AST_INT:
+            printf("Int: %s\n", node->token.lexeme);
             break;
         case AST_STRINGCHAR:
             printf("String/Char: %s\n", node->token.lexeme);
@@ -544,6 +548,9 @@ void print_ast(ASTNode *node, int level) {
         case AST_FACTORIAL:
             printf("Factorial %s\n", node->token.lexeme);
             break;
+        case AST_EXPRESSION:
+            printf("Expression\n");
+            break;
         default:
             printf("Unknown node type\n");
     }
@@ -561,7 +568,7 @@ void free_ast(ASTNode *node) {
     free(node);
 }
 
-/* KEEPING OLD MAIN FOR REFERENCING */
+/* KEEPING OLD MAIN FOR REFERENCING
 // Main function for testing
 int main() {
     // get file
@@ -661,3 +668,4 @@ int main() {
     fclose(file);
     return 0;
 }
+*/

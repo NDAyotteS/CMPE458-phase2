@@ -7,8 +7,7 @@ char c;
 a = 42;
 b = "Hello, Parser!";
 c = 'A';
-a = x + 10 * 3;
-
+a = a + 10 * 3;
 
 # Print statement function call
 print(a);
@@ -37,4 +36,5 @@ repeat {
 # Factorial function call
 int z;
 z = $(5);
-z = $(1+2+3);
+
+

@@ -35,9 +35,12 @@ typedef struct {
 void add_symbol(SymbolTable* table, const char* name, int type, int line);
 Symbol* lookup_symbol(SymbolTable* table, const char* name);
 Symbol* lookup_symbol_current_scope(SymbolTable* table, const char* name);
+void print_symbol_table(SymbolTable* table);
+void print_symbol(Symbol* symbol);
 void enter_scope(SymbolTable* table);
 void exit_scope(SymbolTable* table);
 void remove_symbols_in_current_scope(SymbolTable* table);
+void free_symbol(Symbol* symbol);
 void free_symbol_table(SymbolTable* table);
 
 /* --- SEMANTIC ANALYSIS FUNCTIONS --- */
@@ -46,8 +49,10 @@ int check_program(ASTNode* node, SymbolTable* table);
 int check_statement(ASTNode* node, SymbolTable* table);
 int check_declaration(ASTNode* node, SymbolTable* table);
 int check_assignment(ASTNode* node, SymbolTable* table);
-int check_expression(ASTNode* node, SymbolTable* table);
+bool check_expression(ASTNode* node, SymbolTable* table);
+bool check_string(ASTNode* node, SymbolTable* table);
 int check_block(ASTNode* node, SymbolTable* table);
+int check_print(ASTNode* node, SymbolTable* table);
 int check_condition(ASTNode* node, SymbolTable* table);
 int check_condition(ASTNode* node, SymbolTable* table);
 
