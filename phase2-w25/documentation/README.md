@@ -60,7 +60,7 @@ Multi line:
 /*Multi line comments look  
 like this*/
 ```
-# SeaPlus+ PARSER
+# SeaPlus+ PARSER and SEMANTICS
 The SeaPlus+ Parser converts SeaPlus+ source code into an Abstract Syntax Tree (AST). It enforces syntactic 
 rules and error handling to ensure valid program execution
 
@@ -151,6 +151,9 @@ All loops must have an expression as their loop case.
 
 The parser does not check that the given expression is a logical one, and as such non-logical 
 statements (like the expression 5+5) would be accepted and considered okay.
+
+The expression must of be of numerical type, meaning int and identifiers of int type can be used in
+comparisons only. String comparisons do not work semantically.
 ```
 # valid cases
 while(expression){
@@ -173,8 +176,18 @@ repeat{
 
 ## Print Statements 
 Parses print operations. Can accept any expression or value. Has no restrictions on what the expression is.
+
+The expression must of be of one type, as in it must be either just a string, char, int,
+or expression that can be evaluated. You cannot mix strings and ints, and you cannot chain together
+statements like in traditional c.
 ```
+# Valid Case
 print(expression);
+
+# Invalid Case
+print(expression, expression);
+
+print();
 ```
 
 ## Factorial Statements
@@ -201,7 +214,7 @@ the block parser is responsible for creating and organizing the AST nodes of the
 
 
 ## Parser Error Generation
-Below is  a list of all errors caught by the system  during the parsing phase.
+Below is a list of all errors caught by the system  during the parsing phase.
 
 | **Error Type**                      | **Error Description**                                            |
 |-------------------------------------|------------------------------------------------------------------|
@@ -223,3 +236,15 @@ Below is  a list of all errors caught by the system  during the parsing phase.
 | **PARSE_ERROR_INVALID_FUNC_CALL**   | Function call has incorrect argument count or type mismatch.     |
 | **PARSE_ERROR_BREAK_OUTSIDE_LOOP**  | `break` statement is used outside of a loop context.             |
 | **PARSE_ERROR_INVALID_CONDITION**   | Condition in a control structure is missing or malformed.        |
+
+## Semantic Error Generation
+
+| **Error Type**                      | 
+|-------------------------------------|
+| **SEM_ERROR_NONE**|
+| **SEM_ERROR_UNDECLARED_VARIABLE**|
+| **SEM_ERROR_REDECLARED_VARIABLE**|
+| **SEM_ERROR_TYPE_MISMATCH**|
+| **SEM_ERROR_UNINITIALIZED_VARIABLE**|
+| **SEM_ERROR_INVALID_OPERATION**|
+| **SEM_ERROR_SEMANTIC_ERROR**|
