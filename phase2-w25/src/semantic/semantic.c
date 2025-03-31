@@ -395,5 +395,56 @@ int main() {
     free_ast(ast);
     free(buffer);
     fclose(file);
+
+    // get file
+    file = fopen("../phase2-w25/test/input_valid.txt", "r");
+    if (file == NULL) {
+        printf("Error opening file\n");
+        return 1;
+    }
+
+    // get file size
+    fseek(file, 0, SEEK_END);
+    file_size = ftell(file);
+    rewind(file);
+
+    // get buffer size based on file size for chars
+    buffer = malloc(file_size + 1);
+    if (!buffer) {
+        printf("Memory allocation failed.\n");
+        fclose(file);
+        return 1;
+    }
+
+    // fill buffer with full file of chars in order
+    bytes_read = fread(buffer, 1, file_size, file);
+    buffer[bytes_read] = '\0';
+    b = 0;
+    for (size_t i = 0; i < bytes_read; i++) {
+        if (buffer[i] != '\r') {
+            buffer[b++] = buffer[i];
+        }
+    }
+    buffer[b] = '\0';
+
+    // Lexical analysis and parsing
+    printf("Parsing input:\n%s\n\n", buffer);
+    parser_init(buffer);
+    ast = parse();
+    printf("AST created. Printing...\n\n");
+    print_ast(ast, 0);
+
+    // Semantic analysis
+    result = analyze_semantics(ast);
+    if (result) {
+        printf("Semantic analysis successful. No errors found.\n");
+    } else {
+        printf("Semantic analysis failed. Errors detected.\n");
+    }
+
+    // Free Vars
+    free_ast(ast);
+    free(buffer);
+    fclose(file);
     return 0;
 }
